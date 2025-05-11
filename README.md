@@ -378,3 +378,178 @@ pvp:
 
 ---
 ## API for Developers
+DZEconomy provides an API for other plugins to interact with the economy system:
+```kotlin
+// Example of using DZEconomy API (Java)
+public class MyPlugin extends JavaPlugin {
+    private DZEconomyAPI economyAPI;
+    
+    @Override
+    public void onEnable() {
+        // Get the API instance
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("DZEconomy");
+        if (plugin instanceof DZEconomy) {
+            economyAPI = ((DZEconomy) plugin).getAPI();
+            getLogger().info("DZEconomy API hooked successfully!");
+        } else {
+            getLogger().warning("DZEconomy not found! Disabling plugin...");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        
+        // Example API usages
+        Player player = Bukkit.getPlayer("ExamplePlayer");
+        if (player != null) {
+            // Get balances
+            double money = economyAPI.getBalance(player, CurrencyType.MONEY);
+            double mobcoins = economyAPI.getBalance(player, CurrencyType.MOBCOIN);
+            double gems = economyAPI.getBalance(player, CurrencyType.GEM);
+            
+            // Modify balances
+            economyAPI.addCurrency(player, CurrencyType.MONEY, 100.0);
+            economyAPI.removeCurrency(player, CurrencyType.MOBCOIN, 5.0);
+            economyAPI.setCurrency(player, CurrencyType.GEM, 10.0);
+            
+            // Check if player can afford
+            boolean canAfford = economyAPI.has(player, CurrencyType.MONEY, 500.0);
+            
+            // Get player's rank
+            String rankName = economyAPI.getPlayerRank(player).getName();
+        }
+    }
+}
+```
+
+---
+## File Structure
+```bash
+DZEconomy/
+├── build.gradle.kts
+├── settings.gradle
+├── src/
+│   └── main/
+│       └── kotlin/
+│           └── dev/
+│               └── demonzeconomy/
+│                   ├── DZEconomy.kt              # Main plugin class
+│                   ├── api/
+│                   │   ├── DZEconomyAPI.kt       # API interface
+│                   │   └── DZEconomyAPIImpl.kt   # API implementation
+│                   ├── command/                  # Command handlers
+│                   │   ├── MoneyCommand.kt
+│                   │   ├── MobCoinCommand.kt
+│                   │   ├── GemCommand.kt
+│                   │   └── EconomyCommand.kt
+│                   ├── config/                   # Configuration handlers
+│                   │   ├── ConfigManager.kt
+│                   │   ├── RankManager.kt
+│                   │   └── MessageManager.kt
+│                   ├── currency/                 # Currency implementation
+│                   │   ├── Currency.kt
+│                   │   ├── CurrencyType.kt
+│                   │   └── CurrencyManager.kt
+│                   ├── data/                     # Data storage
+│                   │   ├── PlayerData.kt
+│                   │   ├── PlayerDataManager.kt
+│                   │   └── FlatFileStorageProvider.kt
+│                   ├── event/                    # Event listeners
+│                   │   ├── PlayerListeners.kt
+│                   │   └── MobKillListener.kt
+│                   ├── manager/                  # System managers
+│                   │   ├── EconomyManager.kt
+│                   │   ├── RankManager.kt
+│                   │   └── TransactionManager.kt
+│                   ├── placeholder/              # PlaceholderAPI integration
+│                   │   └── DZEconomyExpansion.kt
+│                   └── util/                     # Utility classes
+│                       ├── FormatUtil.kt
+│                       ├── NumberUtil.kt
+│                       └── LangUtil.kt
+```
+
+---
+## Implementation Details
+### Command Response System
+Each command should provide appropriate feedback to players.
+### Example Flow for /money send:
+Player types /money send Player2 1000
+System verifies Player2 exists (UUID check)
+System ensures sender has 1000 + tax amount
+System calculates tax based on sender's rank
+System checks if sender has reached daily send limit
+System checks if sender is on cooldown
+If all checks pass:
+- Deduct 1000 + tax from sender
+- Add 1000 to receiver
+- Notify sender: "You sent 1000 to Player2. Tax paid: 50"
+- Notify receiver: "Received 1000 from Player1"
+- Show updated balance to both players
+- Start cooldown timer for sender
+- Increment sender's daily transaction count
+If any check fails, provide specific error message
+### Currency Storage Model
+Each player's data should be stored in a structured format:
+```yaml
+player_uuid:
+  name: "PlayerName"
+  currencies: { money: 5000.50, mobcoin: 120.25, gem: 3.75 }
+  transaction_data: { money_send_count: 3, money_send_last: 1620000000000, mobcoin_send_count: 1, mobcoin_send_last: 1620000000000, gem_send_count: 0, gem_send_last: 0 }
+  statistics: { total_sent: 10000.0, total_received: 5000.0, mob_kills: 150, player_kills: 5 }
+```
+### Mob Reward System Implementation
+The system should detect mob death events and award MobCoins based on mob type:
+
+Listen to EntityDeathEvent
+Check if killer is a player
+Determine mob category (neutral, easy, hard, boss)
+Calculate reward amount based on category
+If mob is a boss and player has rank bonus, apply it
+Add MobCoins to player's balance
+Notify player of reward
+### Player vs. Player Economy
+When a player kills another player, implement the following:
+
+Listen to PlayerDeathEvent
+Check if killer is a player
+Get all currencies from the killed player
+Transfer all currencies to killer
+Notify both players of the transaction
+### New Player Join System
+When a new player joins the server for the first time:
+
+Check if player data exists
+If not, create new player data
+Add new player bonuses (50,000 Money, 500 MobCoin, 5 Gem)
+Send welcome message with bonus notification
+### Performance Considerations
+- Implement data caching to reduce disk I/O
+- Limit unnecessary reloading of configuration files
+- Use efficient data structures and algorithms
+- Implement asynchronous data saving
+- Optimize for large player counts
+
+---
+## Versioning and Update Plan
+### Version 1.0.0 (Initial Release)
+- Core currency functionality: Money, MobCoin, Gem
+- Basic commands for all currencies
+- Rank-based economy system
+- Mob reward system
+- PVP economy system
+- PlaceholderAPI integration
+- LuckPerms integration
+- File-based storage system
+### Future Updates
+- Web interface for economy management
+- MySQL/Database support
+- Economy statistics and leaderboards
+- API expansion for easier integration
+- Additional currency types
+- Shop system integration
+- Banking system with interest
+
+---
+## Conclusion
+DZEconomy is a comprehensive economy plugin designed to provide server administrators with powerful economic management tools. With three different currencies, a rank-based permission system, mob rewards, and extensive configuration options, it can be customized to fit the needs of any server.
+
+---
