@@ -148,4 +148,50 @@ Large numbers are automatically displayed in short form notation for cleaner UI 
 | 1Utr     | 10^96 | 1,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000 | One untrigintillion |
 | 1Dtr     | 10^99 | 1,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000 | One duotrigintillion |
 | 1G      | 10^100| 10,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000 | One Google (Googol) |
+### Short Form Notation Examples:
+- Player with 6,000 money: Displays as 6K
+- Player with 6,100 money: Displays as 6.1K
+- Player with 6,001 money: Displays as 6K (decimal limitation)
+- Player with 6,703.35732 money: Displays as 6.70K (decimal limitation)
 
+---
+## Integration
+### PlaceholderAPI Support
+The plugin provides the following placeholders for use with PlaceholderAPI:
+- %dz_money% - Player's money balance
+- %dz_mobcoin% - Player's MobCoin balance
+- %dz_gem% - Player's Gem balance
+### LuckPerms Integration
+The plugin integrates with LuckPerms for permission-based rank assignment. Players will receive economic benefits based on their highest applicable rank permission.
+
+---
+## Storage System
+The plugin uses FlatFileStorageProvider for data storage. No external database is required. Player data is stored efficiently with PlayerDataManager optimization.
+
+---
+## Configuration
+When the plugin is loaded for the first time, it creates a configuration directory with several YAML files:
+### config.yml
+```yaml
+debug: false
+auto-save-interval: 5
+currencies:
+  money: { enabled: true, new-player-bonus: 50000, symbol: "$", decimal-places: 2 }
+  mobcoin: { enabled: true, new-player-bonus: 500, symbol: "⛂", decimal-places: 2 }
+  gem: { enabled: true, new-player-bonus: 5, symbol: "♦", decimal-places: 2 }
+conversion:
+  enabled: true
+  rates:
+    money-to-mobcoin: 100
+    mobcoin-to-money: 100
+    mobcoin-to-gem: 100
+    gem-to-mobcoin: 100
+    money-to-gem: 10000
+    gem-to-money: 10000
+format:
+  use-short-form: true
+  decimal-limit: 2
+hooks:
+  placeholderapi: true
+  luckperms: true
+```
