@@ -262,3 +262,119 @@ ranks:
 
 # You can add more ranks below
 ```
+### mob-rewards.yml
+```yaml
+# DZEconomy Mob Rewards Configuration
+
+enabled: true  # Master switch for all mob rewards
+
+categories:
+  neutral: { enable : true, reward: 1 }  # MobCoins per kill
+    mobs:
+      - PIG
+      - COW
+      - SHEEP
+      - CHICKEN
+      - HORSE
+      - DONKEY
+      - MULE
+      - LLAMA
+      - RABBIT
+      - FOX
+      - WOLF
+      - OCELOT
+      - CAT
+  
+  easy: { enable : true, reward: 2 }  # MobCoins per kill
+    mobs:
+      - ZOMBIE
+      - SKELETON
+      - SPIDER
+      - CAVE_SPIDER
+      - SILVERFISH
+      - ENDERMITE
+      - SLIME
+      - MAGMA_CUBE
+      - ZOMBIE_VILLAGER
+      - DROWNED
+      - HUSK
+      - STRAY
+  
+  hard: { enable : true, reward: 4 }  # MobCoins per kill
+    mobs:
+      - CREEPER
+      - WITCH
+      - ENDERMAN
+      - BLAZE
+      - GUARDIAN
+      - EVOKER
+      - VINDICATOR
+      - PILLAGER
+      - RAVAGER
+      - PHANTOM
+      - GHAST
+      - SHULKER
+      - ELDER_GUARDIAN
+  
+  boss: { enable : true, reward: 50 }  # MobCoins per kill
+    mobs:
+      - ENDER_DRAGON
+      - WITHER
+      - WARDEN
+```
+### messages.yml
+```yaml
+# DZEconomy Messages Configuration
+
+prefix: "&8[&aDZEconomy&8] "
+
+# General messages
+general:
+  no-permission: "{prefix}&cYou don't have permission to use this command."
+  player-not-found: "{prefix}&cPlayer not found."
+  invalid-amount: "{prefix}&cPlease enter a valid amount."
+  invalid-currency: "{prefix}&cInvalid currency type. Use: money, mobcoin, or gem."
+  reload-success: "{prefix}&aConfiguration reloaded successfully."
+  new-player-bonus: "{prefix}&aWelcome to the server! You received {money} Money, {mobcoin} MobCoin, and {gem} Gem as a starting bonus."
+
+# Money messages
+money:
+  balance: "{prefix}&aYour money balance: &f{amount}"
+  send:
+    success: "{prefix}&aYou sent &f{amount} &ato {player}. Tax paid: &f{tax}"
+    received: "{prefix}&aReceived &f{amount} &afrom {player}"
+    insufficient: "{prefix}&cYou don't have enough money. Required: &f{amount}&c (including tax: &f{tax}&c)"
+    cooldown: "{prefix}&cYou need to wait {time} before sending money again."
+    limit-reached: "{prefix}&cYou've reached your daily send limit ({limit} times)."
+  request:
+    sent: "{prefix}&aRequested &f{amount} &afrom {player}"
+    received: "{prefix}&a{player} requested &f{amount} &afrom you. Type &f/money accept &aor &f/money deny"
+    accepted: "{prefix}&aYou accepted the money request from {player}"
+    denied: "{prefix}&cYou denied the money request from {player}"
+    timeout: "{prefix}&cMoney request timed out"
+    no-pending: "{prefix}&cYou don't have any pending money requests."
+  add:
+    success: "{prefix}&aAdded &f{amount} &ato {player}'s account"
+    received: "{prefix}&f{amount} &ahas been added to your account by an operator"
+
+# Similar sections for mobcoin and gem messages
+
+# Economy conversion messages
+economy:
+  convert:
+    success: "{prefix}&aConverted &f{from_amount} {from_currency} &ato &f{to_amount} {to_currency}. Tax paid: &f{tax} {from_currency}"
+    insufficient: "{prefix}&cYou don't have enough {from_currency}. Required: &f{amount}&c (including tax: &f{tax}&c)"
+
+# Mob kill messages
+mob-kill:
+  reward: "{prefix}&aYou received &f{amount} MobCoins &afor killing a {mob}!"
+  boss-bonus: "{prefix}&aYour rank gives you an extra &f{bonus} MobCoins &afor killing a boss mob!"
+
+# PVP messages
+pvp:
+  killer: "{prefix}&aYou killed {player} and received &f{money} Money&a, &f{mobcoin} MobCoins&a, and &f{gem} Gems&a!"
+  victim: "{prefix}&cYou were killed by {player} and lost all your currency!"
+```
+
+---
+## API for Developers
