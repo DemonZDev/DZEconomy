@@ -195,3 +195,70 @@ hooks:
   placeholderapi: true
   luckperms: true
 ```
+### ranks.yml
+```yaml
+ranks:
+  # Default rank settings
+  default:
+    permission: "dzeconomy.default"
+    
+    money: { enable:true }
+      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
+      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
+      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
+      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
+      min-send-limit: { enable: true, amount: 100.0, duration: daily }
+      times-send-limit: { enable: true, time: 6, duration: daily }
+
+    mobcoin: { enable:true }
+      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
+      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
+      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
+      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
+      min-send-limit: { enable: true, amount: 100.0, duration: daily }
+      times-send-limit: { enable: true, time: 6, duration: daily }
+
+    gem: { enable:true }
+      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
+      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
+      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
+      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
+      min-send-limit: { enable: true, amount: 100.0, duration: daily }
+      times-send-limit: { enable: true, time: 6, duration: daily }
+
+    boss-kill-bonus: { enable: true, percentage: 0.0}     # 0% extra rewards from boss kills
+    conversion-tax: { enable: true, percentage: 5.0 }      # 5% tax on currency conversions
+  
+  # Example rank with better benefits
+  example:
+    permission: "dzeconomy.example"
+
+    money: { enable:true }
+      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
+      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
+      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
+      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
+      min-send-limit: { enable: true, amount: 100.0, duration: daily }
+      times-send-limit: { enable: true, time: 6, duration: daily }
+
+    mobcoin: { enable:true }
+      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
+      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
+      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
+      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
+      min-send-limit: { enable: true, amount: 100.0, duration: daily }
+      times-send-limit: { enable: true, time: 6, duration: daily }
+
+    gem: { enable:true }
+      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
+      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
+      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
+      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
+      min-send-limit: { enable: true, amount: 100.0, duration: daily }
+      times-send-limit: { enable: true, time: 6, duration: daily }
+
+    boss-kill-bonus: { enable: true, percentage: 2.0}     # 2% extra rewards from boss kills
+    conversion-tax: { enable: true, percentage: 2.0 }      # 2% tax on currency conversions
+
+# You can add more ranks below
+```
