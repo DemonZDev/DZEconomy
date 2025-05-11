@@ -39,8 +39,15 @@ DZEconomy is a comprehensive multi-currency economy plugin for PaperMC servers p
 
 ## Currencies System
 DZEconomy provides three different currencies, each with its own value and purpose:
-|Currency|
-|--------|
-|Money   |
-|MobCoin |
-|Gems    |
+|Currency|Description|Initial Amount|Acquisition|
+|---|---|---|---|
+|Money|Standard currency similar to Vault|50,000|Player transactions, admin commands|
+|MobCoin|Special currency earned by killing mobs|500|Mob kills, player transactions, admin commands|
+|Gems|Premium high-value currency|5|Player transactions, admin commands|
+
+### Currency Conversion
+Players can convert between currencies using the economy conversion command. The default exchange rates are:
+- 1 Gem = 100 MobCoin = 10,000 Money
+These rates are fully configurable in the plugin configuration.
+
+---
