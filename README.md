@@ -426,6 +426,14 @@ public class MyPlugin extends JavaPlugin {
 DZEconomy/
 ├── build.gradle.kts
 ├── settings.gradle
+├── gradlew.bat
+├── gradlew
+├── gradle
+|   └── wrapper
+|       └── gradle-wrapper.jar
+|       └── gradle-wrapper.properties
+├── README.md
+├── LICENSE
 ├── src/
 │   └── main/
 │       └── kotlin/
