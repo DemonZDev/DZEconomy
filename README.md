@@ -51,3 +51,5 @@ Players can convert between currencies using the economy conversion command. The
 These rates are fully configurable in the plugin configuration.
 
 ---
+
+## Command System
