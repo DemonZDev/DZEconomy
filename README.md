@@ -61,14 +61,23 @@ These rates are fully configurable in the plugin configuration.
 |/money send <player_name> <amount>|Sends Money to another player|Verifies both player UUIDs Exist, Ensures sender is online, Verifies sender has sufficient funds (amount + tax), Applies rank-based tax (default: 5%, example: 2%), Enforces daily transaction limits (default: 5 times/day, example: 10 times/day), Applies cooldown period (default: 300s, example: 150s), Sends notification to both parties, Automatically shows updated balance to both players|
 |/money request <player_name> <amount>|Requests Money from another player|Verifies both players exist and are online, Notifies requester confirmation message, Notifies requested player with accept/deny options, Sets 120-second timeout for request, If accepted, performs the same checks as /money send, If denied or timed out, cancels the request, Applies send limits, cooldowns, and taxes to the requested player|
 |/money add <player_name> <amount>|Admin command to add Money to a player|Requires operator permission, Validates player UUID exists, Adds money to player's account from the economy, Notifies player of added amount, Shows updated balance automatically|
-|/money accept or /money deny|Accept or Deny any pending request|Cheak if the player have any pending request, Cheak if the request is time out, Notify player about no pending request or time outed pending request|
+|/money accept or /money deny|Accept or Deny every Money pending request|Cheak if the player have any pending request, Cheak if the request is time out, Notify player about no pending request or time outed pending request|
 |/money or /money help|Shows help menu for Money commands|Lists all money commands with descriptions, Shows admin commands only if player has operator permissions|
 
 |Command|Description|
 |---|---|
-|/money balance|Checks the MobCoin balance of the player|
-|/money send <player_name> <amount>|Sends MobCoins to another player (with same conditions as money send)|
-|/money request <player_name> <amount>|Requests MobCoins from another player (with same conditions as money request)|
-|/money add <player_name> |Admin command to add MobCoins to a player|
-|/money accept or /money deny|Accept or Deny any pending request|
-|/money or /money help|Shows help menu for MobCoin commands|
+|/mobcoin balance|Checks the MobCoin balance of the player|
+|/mobcoin send <player_name> <amount>|Sends MobCoins to another player (with same conditions as money send)|
+|/mobcoin request <player_name> <amount>|Requests MobCoins from another player (with same conditions as money request)|
+|/mobcoin add <player_name> |Admin command to add MobCoins to a player|
+|/mobcoin accept or /mobcoin deny|Accept or Deny every MobCoin pending request|
+|/mobcoin or /mobcoin help|Shows help menu for MobCoin commands|
+
+|Command|Description|
+|---|---|
+|/gem balance|Checks the Gem balance of the player|
+|/gem send <player_name> <amount>|Sends Gems to another player (with same conditions as money send)|
+|/gem request <player_name> <amount>|Requests Gems from another player (with same conditions as money request)|
+|/gem add <player_name> <amount>|Admin command to add Gems to a player|
+|/gem accept or /gem deny|Accept or Deny every Gem pending request|
+|/gem or /gem help|Shows help menu for Gem commands|
