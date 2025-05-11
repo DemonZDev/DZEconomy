@@ -53,3 +53,12 @@ These rates are fully configurable in the plugin configuration.
 ---
 
 ## Command System
+
+### Money Commands
+|Command|Description|Implementation Details|
+|---|---|---|
+|/money balance|Checks the balance of the player|Displays the player's current money balance in a formatted message|
+|/money send <player_name> <amount>|Sends money to another player|Verifies both player UUIDs Exist, Ensures sender is online, Verifies sender has sufficient funds (amount + tax), Applies rank-based tax (default: 5%, example: 2%), Enforces daily transaction limits (default: 5 times/day, example: 10 times/day), Applies cooldown period (default: 300s, example: 150s), Sends notification to both parties, Automatically shows updated balance to both players|
+||||
+||||
+||||
