@@ -166,7 +166,7 @@ The plugin integrates with LuckPerms for permission-based rank assignment. Playe
 
 ---
 ## Storage System
-The plugin uses FlatFileStorageProvider for data storage. No external database is required. Player data is stored efficiently with PlayerDataManager optimization.
+The plugin uses FlatFileStorageProvider for data storage as default. Database also support in it, you can turn on/off database mode from config.yml (default is off). Player data is stored efficiently with PlayerDataManager optimization.
 
 ---
 ## Configuration
@@ -175,6 +175,7 @@ When the plugin is loaded for the first time, it creates a configuration directo
 ```yaml
 debug: false
 auto-save-interval: 5
+databse: { enable: false}
 currencies:
   money: { enabled: true, new-player-bonus: 50000, symbol: "$", decimal-places: 2 }
   mobcoin: { enabled: true, new-player-bonus: 500, symbol: "⛂", decimal-places: 2 }
