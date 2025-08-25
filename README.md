@@ -426,53 +426,71 @@ public class MyPlugin extends JavaPlugin {
 DZEconomy/
 ├── build.gradle.kts
 ├── settings.gradle
-├── gradlew.bat
 ├── gradlew
-├── gradle
-|   └── wrapper
-|       └── gradle-wrapper.jar
-|       └── gradle-wrapper.properties
+├── gradlew.bat
+├── gradle/
+│   └── wrapper/
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
 ├── README.md
 ├── LICENSE
 ├── src/
 │   └── main/
-│       └── kotlin/
-│           └── dev/
-│               └── demonzeconomy/
-│                   ├── DZEconomy.kt              # Main plugin class
-│                   ├── api/
-│                   │   ├── DZEconomyAPI.kt       # API interface
-│                   │   └── DZEconomyAPIImpl.kt   # API implementation
-│                   ├── command/                  # Command handlers
-│                   │   ├── MoneyCommand.kt
-│                   │   ├── MobCoinCommand.kt
-│                   │   ├── GemCommand.kt
-│                   │   └── EconomyCommand.kt
-│                   ├── config/                   # Configuration handlers
-│                   │   ├── ConfigManager.kt
-│                   │   ├── RankManager.kt
-│                   │   └── MessageManager.kt
-│                   ├── currency/                 # Currency implementation
-│                   │   ├── Currency.kt
-│                   │   ├── CurrencyType.kt
-│                   │   └── CurrencyManager.kt
-│                   ├── data/                     # Data storage
-│                   │   ├── PlayerData.kt
-│                   │   ├── PlayerDataManager.kt
-│                   │   └── FlatFileStorageProvider.kt
-│                   ├── event/                    # Event listeners
-│                   │   ├── PlayerListeners.kt
-│                   │   └── MobKillListener.kt
-│                   ├── manager/                  # System managers
-│                   │   ├── EconomyManager.kt
-│                   │   ├── RankManager.kt
-│                   │   └── TransactionManager.kt
-│                   ├── placeholder/              # PlaceholderAPI integration
-│                   │   └── DZEconomyExpansion.kt
-│                   └── util/                     # Utility classes
-│                       ├── FormatUtil.kt
-│                       ├── NumberUtil.kt
-│                       └── LangUtil.kt
+│       ├── kotlin/
+│       │   └── dev/
+│       │       └── demonzeconomy/
+│       │           ├── DZEconomy.kt                  # Main plugin class (startup, DI/wiring, tasks)
+│       │           ├── api/
+│       │           │   ├── DZEconomyAPI.kt           # Public API (for shops/banks/crates, etc.)
+│       │           │   └── DZEconomyAPIImpl.kt       # API implementation (registered via ServicesManager)
+│       │           ├── command/
+│       │           │   ├── AbstractCurrencyCommand.kt# Shared logic for money/mobcoin/gem commands
+│       │           │   ├── MoneyCommand.kt
+│       │           │   ├── MobCoinCommand.kt
+│       │           │   ├── GemCommand.kt
+│       │           │   ├── EconomyCommand.kt         # /economy <from> <to> <amount>
+│       │           │   ├── AdminCommand.kt           # /dze reload|debug
+│       │           │   └── CommandRegistrar.kt       # Centralized registration & tab-complete glue
+│       │           ├── config/
+│       │           │   ├── ConfigManager.kt          # config.yml (currencies, storage, bonuses, rates, autosave)
+│       │           │   ├── RankManager.kt            # ranks.yml (permissions, tax, cooldowns, limits, boss bonus)
+│       │           │   ├── MessageManager.kt         # messages.yml loader + helpers
+│       │           │   └── MobRewardsConfig.kt       # mob-rewards.yml (categories, rewards, enabled flags)
+│       │           ├── currency/
+│       │           │   ├── CurrencyType.kt           # MONEY / MOBCOIN / GEM (+ parsing aliases)
+│       │           │   ├── Currency.kt               # Currency data helpers (caps/validation contracts)
+│       │           │   └── CurrencyManager.kt        # High-level helpers for balance ops by type
+│       │           ├── data/
+│       │           │   ├── PlayerData.kt             # Per-player balances, sends/cooldowns, day reset
+│       │           │   ├── PlayerDataManager.kt      # Cache + orchestrates storage backend
+│       │           │   └── DailyResetService.kt      # Resets daily send counts on day rollover
+│       │           ├── storage/
+│       │           │   ├── StorageProvider.kt        # Interface (load/save/exists/flush/close)
+│       │           │   ├── FlatFileStorageProvider.kt# YAML per-player files (default)
+│       │           │   └── SQLiteStorageProvider.kt  # Optional DB backend (toggle via config.yml)
+│       │           ├── event/
+│       │           │   ├── PlayerJoinListener.kt     # New player bonuses
+│       │           │   ├── PlayerDeathListener.kt    # Transfer ALL balances to killer
+│       │           │   └── MobKillListener.kt        # Mob rewards + boss bonus by rank
+│       │           ├── manager/
+│       │           │   ├── EconomyManager.kt         # Core economy ops (tax, conversion, checks)
+│       │           │   ├── RequestManager.kt         # Handles /request, /accept, /deny + expiry task
+│       │           │   └── TransactionManager.kt     # Future-proofing (external integrations/hooks)
+│       │           ├── request/
+│       │           │   └── PaymentRequest.kt         # Request DTO (currency, requester, receiver, amount, TTL)
+│       │           ├── placeholder/
+│       │           │   └── DZEconomyExpansion.kt     # %dz_money%, %dz_mobcoin%, %dz_gem%
+│       │           └── util/
+│       │               ├── FormatUtil.kt             # 2-decimal trunc + short suffix K/M/B/... formatter
+│       │               ├── NumberUtil.kt             # Safe parsing/BigDecimal helpers
+│       │               └── LangUtil.kt               # Colorize, prefix, message templating
+│       └── resources/
+│           ├── plugin.yml                            # commands/permissions + api-version 1.21
+│           ├── config.yml                            # core settings, storage, conversion rates, bonuses
+│           ├── ranks.yml                             # rank permissions, tax, cooldowns, limits, boss bonus
+│           ├── mob-rewards.yml                       # categories, rewards, mobs
+│           └── messages.yml                          # all messages/localization
+└── .gitignore
 ```
 
 ---
