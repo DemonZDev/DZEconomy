@@ -2,7 +2,7 @@
 ![IMG-20250419-WA0007](https://github.com/user-attachments/assets/e830d283-8c95-41a4-bd20-939ada75d50b)
 |Support|Version|
 |---|---|
-|PaperMC API|1.21.1|
+|PaperMC/Bukkit API|1.21.1|
 |LuckPerms API|Latest|
 |PlaceholderAPI|Latest|
 
@@ -13,13 +13,13 @@
 
 |Project Dependencies|Version|
 |---|---|
-|Kotlin|1.8.21|
-|Gradle|8.7|
+|Java|Any|
+|Gradle|Any|
 |DZEconomy|1.0.0|
 
 |Server Dependencies|Version|
 |---|---|
-|PaperMC|1.21.1|
+|PaperMC/Bukkit|1.21.1|
 |PlaceholderAPI|Latest|
 |LuckPermsHook|Latest|
 
@@ -437,54 +437,54 @@ DZEconomy/
 ├── LICENSE
 ├── src/
 │   └── main/
-│       ├── kotlin/
+│       ├── java/
 │       │   └── dev/
 │       │       └── demonzeconomy/
-│       │           ├── DZEconomy.kt                  # Main plugin class (startup, DI/wiring, tasks)
+│       │           ├── DZEconomy.java                  # Main plugin class (startup, DI/wiring, tasks)
 │       │           ├── api/
-│       │           │   ├── DZEconomyAPI.kt           # Public API (for shops/banks/crates, etc.)
-│       │           │   └── DZEconomyAPIImpl.kt       # API implementation (registered via ServicesManager)
+│       │           │   ├── DZEconomyAPI.java           # Public API (for shops/banks/crates, etc.)
+│       │           │   └── DZEconomyAPIImpl.java       # API implementation (registered via ServicesManager)
 │       │           ├── command/
-│       │           │   ├── AbstractCurrencyCommand.kt# Shared logic for money/mobcoin/gem commands
-│       │           │   ├── MoneyCommand.kt
-│       │           │   ├── MobCoinCommand.kt
-│       │           │   ├── GemCommand.kt
-│       │           │   ├── EconomyCommand.kt         # /economy <from> <to> <amount>
-│       │           │   ├── AdminCommand.kt           # /dze reload|debug
-│       │           │   └── CommandRegistrar.kt       # Centralized registration & tab-complete glue
+│       │           │   ├── AbstractCurrencyCommand.java# Shared logic for money/mobcoin/gem commands
+│       │           │   ├── MoneyCommand.java
+│       │           │   ├── MobCoinCommand.java
+│       │           │   ├── GemCommand.java
+│       │           │   ├── EconomyCommand.java         # /economy <from> <to> <amount>
+│       │           │   ├── AdminCommand.java           # /dze reload|debug
+│       │           │   └── CommandRegistrar.java       # Centralized registration & tab-complete glue
 │       │           ├── config/
-│       │           │   ├── ConfigManager.kt          # config.yml (currencies, storage, bonuses, rates, autosave)
-│       │           │   ├── RankManager.kt            # ranks.yml (permissions, tax, cooldowns, limits, boss bonus)
-│       │           │   ├── MessageManager.kt         # messages.yml loader + helpers
-│       │           │   └── MobRewardsConfig.kt       # mob-rewards.yml (categories, rewards, enabled flags)
+│       │           │   ├── ConfigManager.java          # config.yml (currencies, storage, bonuses, rates, autosave)
+│       │           │   ├── RankManager.java            # ranks.yml (permissions, tax, cooldowns, limits, boss bonus)
+│       │           │   ├── MessageManager.java         # messages.yml loader + helpers
+│       │           │   └── MobRewardsConfig.java       # mob-rewards.yml (categories, rewards, enabled flags)
 │       │           ├── currency/
-│       │           │   ├── CurrencyType.kt           # MONEY / MOBCOIN / GEM (+ parsing aliases)
-│       │           │   ├── Currency.kt               # Currency data helpers (caps/validation contracts)
-│       │           │   └── CurrencyManager.kt        # High-level helpers for balance ops by type
+│       │           │   ├── CurrencyType.java           # MONEY / MOBCOIN / GEM (+ parsing aliases)
+│       │           │   ├── Currency.java               # Currency data helpers (caps/validation contracts)
+│       │           │   └── CurrencyManager.java        # High-level helpers for balance ops by type
 │       │           ├── data/
-│       │           │   ├── PlayerData.kt             # Per-player balances, sends/cooldowns, day reset
-│       │           │   ├── PlayerDataManager.kt      # Cache + orchestrates storage backend
-│       │           │   └── DailyResetService.kt      # Resets daily send counts on day rollover
+│       │           │   ├── PlayerData.java             # Per-player balances, sends/cooldowns, day reset
+│       │           │   ├── PlayerDataManager.java      # Cache + orchestrates storage backend
+│       │           │   └── DailyResetService.java      # Resets daily send counts on day rollover
 │       │           ├── storage/
-│       │           │   ├── StorageProvider.kt        # Interface (load/save/exists/flush/close)
-│       │           │   ├── FlatFileStorageProvider.kt# YAML per-player files (default)
-│       │           │   └── SQLiteStorageProvider.kt  # Optional DB backend (toggle via config.yml)
+│       │           │   ├── StorageProvider.java        # Interface (load/save/exists/flush/close)
+│       │           │   ├── FlatFileStorageProvider.java# YAML per-player files (default)
+│       │           │   └── SQLiteStorageProvider.java  # Optional DB backend (toggle via config.yml)
 │       │           ├── event/
-│       │           │   ├── PlayerJoinListener.kt     # New player bonuses
-│       │           │   ├── PlayerDeathListener.kt    # Transfer ALL balances to killer
-│       │           │   └── MobKillListener.kt        # Mob rewards + boss bonus by rank
+│       │           │   ├── PlayerJoinListener.java     # New player bonuses
+│       │           │   ├── PlayerDeathListener.java    # Transfer ALL balances to killer
+│       │           │   └── MobKillListener.java        # Mob rewards + boss bonus by rank
 │       │           ├── manager/
-│       │           │   ├── EconomyManager.kt         # Core economy ops (tax, conversion, checks)
-│       │           │   ├── RequestManager.kt         # Handles /request, /accept, /deny + expiry task
-│       │           │   └── TransactionManager.kt     # Future-proofing (external integrations/hooks)
+│       │           │   ├── EconomyManager.java         # Core economy ops (tax, conversion, checks)
+│       │           │   ├── RequestManager.java         # Handles /request, /accept, /deny + expiry task
+│       │           │   └── TransactionManager.java     # Future-proofing (external integrations/hooks)
 │       │           ├── request/
-│       │           │   └── PaymentRequest.kt         # Request DTO (currency, requester, receiver, amount, TTL)
+│       │           │   └── PaymentRequest.java         # Request DTO (currency, requester, receiver, amount, TTL)
 │       │           ├── placeholder/
-│       │           │   └── DZEconomyExpansion.kt     # %dz_money%, %dz_mobcoin%, %dz_gem%
+│       │           │   └── DZEconomyExpansion.java     # %dz_money%, %dz_mobcoin%, %dz_gem%
 │       │           └── util/
-│       │               ├── FormatUtil.kt             # 2-decimal trunc + short suffix K/M/B/... formatter
-│       │               ├── NumberUtil.kt             # Safe parsing/BigDecimal helpers
-│       │               └── LangUtil.kt               # Colorize, prefix, message templating
+│       │               ├── FormatUtil.java             # 2-decimal trunc + short suffix K/M/B/... formatter
+│       │               ├── NumberUtil.java             # Safe parsing/BigDecimal helpers
+│       │               └── LangUtil.java               # Colorize, prefix, message templating
 │       └── resources/
 │           ├── plugin.yml                            # commands/permissions + api-version 1.21
 │           ├── config.yml                            # core settings, storage, conversion rates, bonuses
