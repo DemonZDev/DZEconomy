@@ -24,12 +24,6 @@
 |LuckPermsHook|Latest|
 
 ---
-## Table of Contents
-- [Overview](#overview)
-- [Currencies System](#currencies-system)
-- [Command System](#command-system)
-- 
----
 ## Overview
 DZEconomy is a comprehensive multi-currency economy plugin for PaperMC servers providing advanced economic infrastructure. The plugin offers three different currencies, rank-based permissions and limitations, mob rewards, and an extensive configuration system.
 
