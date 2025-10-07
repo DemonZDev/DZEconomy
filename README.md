@@ -432,8 +432,8 @@ DZEconomy/
 ├── src/
 │   └── main/
 │       ├── java/
-│       │   └── dev/
-│       │       └── demonzeconomy/
+│       │   └── online/
+│       │       └── demonzdevelopment/
 │       │           ├── DZEconomy.java                  # Main plugin class (startup, DI/wiring, tasks)
 │       │           ├── api/
 │       │           │   ├── DZEconomyAPI.java           # Public API (for shops/banks/crates, etc.)
