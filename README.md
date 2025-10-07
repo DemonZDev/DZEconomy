@@ -560,14 +560,6 @@ Send welcome message with bonus notification
 - PlaceholderAPI integration
 - LuckPerms integration
 - File-based storage system
-### Future Updates
-- Web interface for economy management
-- MySQL/Database support
-- Economy statistics and leaderboards
-- API expansion for easier integration
-- Additional currency types
-- Shop system integration
-- Banking system with interest
 
 ---
 ## Conclusion
