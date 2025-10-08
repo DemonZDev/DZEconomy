@@ -169,19 +169,35 @@ When the plugin is loaded for the first time, it creates a configuration directo
 ```yaml
 debug: false
 auto-save-interval: 5
-databse: { enable: false}
+databse:
+  enable: true
+  type: MySQL
+  ip: localhost
+  port: 3306
+  database: dzeconomy
+  username: root
+  password: ""
 currencies:
-  money: { enabled: true, new-player-bonus: 50000, symbol: "$", decimal-places: 2 }
-  mobcoin: { enabled: true, new-player-bonus: 500, symbol: "⛂", decimal-places: 2 }
-  gem: { enabled: true, new-player-bonus: 5, symbol: "♦", decimal-places: 2 }
+  money:
+    enable: true
+    new_player_bonus: 50000
+    symbol: "💵"
+    decimal_places: 2
+  mob-coin:
+    enable: true
+    new_player_bonus: 500
+    symbol: "🪙"
+    decimal_places: 2
+  gem:
+    enable: true
+    new_player_bonus: 5
+    symbol: "💎"
+    decimal_places: 2
 conversion:
   enabled: true
   rates:
-    money-to-mobcoin: 100
     mobcoin-to-money: 100
-    mobcoin-to-gem: 100
     gem-to-mobcoin: 100
-    money-to-gem: 10000
     gem-to-money: 10000
 format:
   use-short-form: true
@@ -194,66 +210,190 @@ hooks:
 ```yaml
 ranks:
   # Default rank settings
-  default:
-    permission: "dzeconomy.default"
-    
-    money: { enable:true }
-      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
-      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
-      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
-      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
-      min-send-limit: { enable: true, amount: 100.0, duration: daily }
-      times-send-limit: { enable: true, time: 6, duration: daily }
+# DZEconomy - Ranks Configuration
+# This file defines the limits, costs, and bonuses for each player rank.
 
-    mobcoin: { enable:true }
-      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
-      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
-      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
-      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
-      min-send-limit: { enable: true, amount: 100.0, duration: daily }
-      times-send-limit: { enable: true, time: 6, duration: daily }
+# =============================================
+# DEFAULT RANK (Basic permissions for all players)
+# =============================================
+default:
+  # The permission node for this rank. Players should have this to use DZEconomy features.
+  permission: "dzeconomy.default"
 
-    gem: { enable:true }
-      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
-      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
-      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
-      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
-      min-send-limit: { enable: true, amount: 100.0, duration: daily }
-      times-send-limit: { enable: true, time: 6, duration: daily }
+  # ==================== MONEY (Primary Currency) ====================
+  money:
+    enable: true
+    # Tax applied when sending money to other players
+    tax:
+      enable: true
+      percentage: 5.0 # 5% tax on all sends
+    # Cooldown between sending money
+    send-cooldown:
+      enable: true
+      duration: 300s # 5 minutes
+    # Maximum total amount that can be sent in a specified duration
+    send-limit:
+      enable: true
+      amount: 5000.0
+      duration: daily # Resets every day. Options: hourly, daily, weekly, monthly
+    # Maximum amount per single transaction
+    max-send-limit:
+      enable: true
+      amount: 1000.0
+    # Minimum amount per single transaction
+    min-send-limit:
+      enable: true
+      amount: 100.0
+    # Number of times money can be sent per duration
+    times-send-limit:
+      enable: true
+      time: 5
+      duration: daily
 
-    boss-kill-bonus: { enable: true, percentage: 0.0}     # 0% extra rewards from boss kills
-    conversion-tax: { enable: true, percentage: 5.0 }      # 5% tax on currency conversions
-  
-  # Example rank with better benefits
-  example:
-    permission: "dzeconomy.example"
+  # ==================== MOBCOIN (Secondary Currency) ====================
+  mobcoin:
+    enable: true
+    tax:
+      enable: true
+      percentage: 5.0
+    send-cooldown:
+      enable: true
+      duration: 300s
+    send-limit:
+      enable: true
+      amount: 100.0
+      duration: daily
+    max-send-limit:
+      enable: true
+      amount: 50.0
+    min-send-limit:
+      enable: true
+      amount: 10.0
+    times-send-limit:
+      enable: true
+      time: 10
+      duration: daily
 
-    money: { enable:true }
-      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
-      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
-      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
-      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
-      min-send-limit: { enable: true, amount: 100.0, duration: daily }
-      times-send-limit: { enable: true, time: 6, duration: daily }
+  # ==================== GEM (Premium Currency) ====================
+  gem:
+    enable: true
+    tax:
+      enable: true
+      percentage: 5.0
+    send-cooldown:
+      enable: true
+      duration: 600s # 10 minutes - longer cooldown for premium currency
+    send-limit:
+      enable: true
+      amount: 50.0
+      duration: weekly # Weekly limit for gems
+    max-send-limit:
+      enable: true
+      amount: 10.0
+    min-send-limit:
+      enable: true
+      amount: 1.0
+    times-send-limit:
+      enable: true
+      time: 3
+      duration: weekly
 
-    mobcoin: { enable:true }
-      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
-      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
-      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
-      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
-      min-send-limit: { enable: true, amount: 100.0, duration: daily }
-      times-send-limit: { enable: true, time: 6, duration: daily }
+  # ==================== GLOBAL BONUSES & SETTINGS ====================
+  # Bonus rewards for killing boss monsters
+  boss-kill-bonus:
+    enable: true
+    percentage: 0.0 # 0% extra rewards for default rank
 
-    gem: { enable:true }
-      tax: { enable: true, percentage: 5.0}          # 5% tax on transactions
-      send-cooldown: { enable: true, duration: 300s }     # Support s, m, h
-      send-limit: { enable: true, amount: 5000.0, duration: daily }    # support hourly, daily, weekly, monthly
-      max-send-limit: { enable: true, amount: 1000.0, duration: daily }
-      min-send-limit: { enable: true, amount: 100.0, duration: daily }
-      times-send-limit: { enable: true, time: 6, duration: daily }
+  # Tax applied when converting between different currencies
+  conversion-tax:
+    enable: true
+    percentage: 5.0 # 5% tax on all currency conversions
 
-    boss-kill-bonus: { enable: true, percentage: 2.0}     # 2% extra rewards from boss kills
-    conversion-tax: { enable: true, percentage: 2.0 }      # 2% tax on currency conversions
+# =============================================
+# EXAMPLE RANK (Enhanced rank with better benefits)
+# =============================================
+example:
+  permission: "dzeconomy.example"
+
+  # ==================== MONEY ====================
+  money:
+    enable: true
+    tax:
+      enable: true
+      percentage: 2.0 # Lower tax for privileged players
+    send-cooldown:
+      enable: true
+      duration: 120s # Shorter cooldown (2 minutes)
+    send-limit:
+      enable: true
+      amount: 25000.0 # Higher sending limit
+      duration: daily
+    max-send-limit:
+      enable: true
+      amount: 5000.0
+    min-send-limit:
+      enable: true
+      amount: 50.0 # Lower minimum send
+    times-send-limit:
+      enable: true
+      time: 20 # Can send money more times per day
+      duration: daily
+
+  # ==================== MOBCOIN ====================
+  mobcoin:
+    enable: true
+    tax:
+      enable: true
+      percentage: 2.0
+    send-cooldown:
+      enable: true
+      duration: 120s
+    send-limit:
+      enable: true
+      amount: 500.0
+      duration: daily
+    max-send-limit:
+      enable: true
+      amount: 100.0
+    min-send-limit:
+      enable: true
+      amount: 5.0
+    times-send-limit:
+      enable: true
+      time: 25
+      duration: daily
+
+  # ==================== GEM ====================
+  gem:
+    enable: true
+    tax:
+      enable: false # No tax on gem transfers for example rank
+    send-cooldown:
+      enable: true
+      duration: 300s # Shorter cooldown for gems
+    send-limit:
+      enable: true
+      amount: 150.0
+      duration: weekly
+    max-send-limit:
+      enable: true
+      amount: 25.0
+    min-send-limit:
+      enable: true
+      amount: 1.0
+    times-send-limit:
+      enable: true
+      time: 10
+      duration: weekly
+
+  # ==================== GLOBAL BONUSES & SETTINGS ====================
+  boss-kill-bonus:
+    enable: true
+    percentage: 5.0 # 5% extra rewards from boss kills
+
+  conversion-tax:
+    enable: true
+    percentage: 2.0 # Lower conversion tax
 
 # You can add more ranks below
 ```
@@ -264,7 +404,9 @@ ranks:
 enabled: true  # Master switch for all mob rewards
 
 categories:
-  neutral: { enable : true, reward: 1 }  # MobCoins per kill
+  natural:
+  enable: true
+  reward: 1  # MobCoins per kill
     mobs:
       - PIG
       - COW
@@ -280,7 +422,9 @@ categories:
       - OCELOT
       - CAT
   
-  easy: { enable : true, reward: 2 }  # MobCoins per kill
+  easy:
+    enable: true
+    reward: 2  # MobCoins per kill
     mobs:
       - ZOMBIE
       - SKELETON
@@ -295,7 +439,9 @@ categories:
       - HUSK
       - STRAY
   
-  hard: { enable : true, reward: 4 }  # MobCoins per kill
+  hard:
+    enable: true
+    reward: 4 # MobCoins per kill
     mobs:
       - CREEPER
       - WITCH
@@ -311,7 +457,9 @@ categories:
       - SHULKER
       - ELDER_GUARDIAN
   
-  boss: { enable : true, reward: 50 }  # MobCoins per kill
+  boss:
+    enable: true
+    reward: 50 # MobCoins per kill
     mobs:
       - ENDER_DRAGON
       - WITHER
