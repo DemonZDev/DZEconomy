@@ -38,7 +38,7 @@
     <url>https://github.com/sdemonzdevelopment-spec/DZEconomy</url>
   </scm>
 
-  <!-- Build Settings -->
+  <!-- Build Properties -->
   <properties>
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -56,21 +56,29 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- HikariCP connection pool -->
+    <!-- PlaceholderAPI -->
+    <dependency>
+      <groupId>me.clip</groupId>
+      <artifactId>placeholderapi</artifactId>
+      <version>2.11.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- HikariCP -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
       <version>5.1.0</version>
     </dependency>
 
-    <!-- SQLite database -->
+    <!-- SQLite -->
     <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.45.3.0</version>
     </dependency>
 
-    <!-- Gson (JSON parsing) -->
+    <!-- Gson -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -85,7 +93,7 @@
 
     <plugins>
 
-      <!-- Compile with Java 21 -->
+      <!-- Java Compiler -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -96,7 +104,7 @@
         </configuration>
       </plugin>
 
-      <!-- Shade plugin (like Gradle Shadow) -->
+      <!-- Shade Plugin (for shaded JAR) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -120,7 +128,7 @@
         </executions>
       </plugin>
 
-      <!-- Jar manifest -->
+      <!-- JAR Manifest -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -142,6 +150,10 @@
     <repository>
       <id>papermc-repo</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
+    </repository>
+    <repository>
+      <id>placeholderapi</id>
+      <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
     </repository>
     <repository>
       <id>sonatype-snapshots</id>
