@@ -128,7 +128,3 @@ public class MyPlugin extends JavaPlugin {
 ## Support
 
 For support, feature requests, or bug reports, please visit our GitHub repository.
-
-## License
-
-All rights reserved © DemonzDevelopment 2024
