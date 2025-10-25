@@ -9,6 +9,15 @@ update-checker:
   # Notify admins on join about updates
   notify-on-join: true
 
+# Updater settings
+updater:
+  # Enable automatic updates
+  enabled: true
+  # Auto-update on server start (downloads to update folder)
+  autoOnStart: false
+  # Attempt hot-reload instead of requiring restart (experimental, may fail)
+  attempt-hot-reload: false
+
 storage:
   # Storage type: FLATFILE, SQLITE, MYSQL
   type: FLATFILE

@@ -51,6 +51,9 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
             case "credits":
                 handleCredits(sender);
                 break;
+            case "update":
+                handleUpdate(sender, Arrays.copyOfRange(args, 1, args.length));
+                break;
             default:
                 showHelp(sender);
                 break;
@@ -214,6 +217,92 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
     }
     
     /**
+     * Handle update command
+     */
+    private void handleUpdate(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("dzeconomy.admin.update") && !sender.isOp()) {
+            sendMessage(sender, "general.no-permission", null);
+            return;
+        }
+        
+        if (args.length == 0) {
+            sender.sendMessage(ColorUtil.translate("&cUsage: /economy update <version|previous|next|latest|auto>"));
+            sender.sendMessage(ColorUtil.translate("&7Examples:"));
+            sender.sendMessage(ColorUtil.translate("&e  /economy update latest &7- Update to latest version"));
+            sender.sendMessage(ColorUtil.translate("&e  /economy update 1.2.3 &7- Update to specific version"));
+            sender.sendMessage(ColorUtil.translate("&e  /economy update previous &7- Downgrade to previous version"));
+            sender.sendMessage(ColorUtil.translate("&e  /economy update next &7- Upgrade to next version"));
+            sender.sendMessage(ColorUtil.translate("&e  /economy update auto &7- Auto-update if newer version exists"));
+            return;
+        }
+        
+        String updateType = args[0].toLowerCase();
+        
+        // Execute async to not block main thread
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            online.demonzdevelopment.update.UpdateManager updateManager = 
+                    new online.demonzdevelopment.update.UpdateManager(plugin);
+            
+            switch (updateType) {
+                case "latest":
+                    updateManager.updateToLatest(sender).thenAccept(result -> {
+                        logUpdateResult(sender, result);
+                    });
+                    break;
+                    
+                case "previous":
+                    updateManager.updateToPrevious(sender).thenAccept(result -> {
+                        logUpdateResult(sender, result);
+                    });
+                    break;
+                    
+                case "next":
+                    updateManager.updateToNext(sender).thenAccept(result -> {
+                        logUpdateResult(sender, result);
+                    });
+                    break;
+                    
+                case "auto":
+                    updateManager.autoUpdate().thenAccept(result -> {
+                        if (result.isSuccess()) {
+                            Bukkit.getScheduler().runTask(plugin, () -> {
+                                sender.sendMessage(ColorUtil.translate(
+                                        "&8[&6DZ&eEconomy&8] &a&l✓ Auto-update completed!"));
+                                sender.sendMessage(ColorUtil.translate(
+                                        "&8[&6DZ&eEconomy&8] &eRestart server to apply changes."));
+                            });
+                        } else {
+                            Bukkit.getScheduler().runTask(plugin, () -> {
+                                sender.sendMessage(ColorUtil.translate(
+                                        "&8[&6DZ&eEconomy&8] &7" + result.getMessage()));
+                            });
+                        }
+                        logUpdateResult(sender, result);
+                    });
+                    break;
+                    
+                default:
+                    // Treat as version number
+                    updateManager.updateToVersion(sender, updateType).thenAccept(result -> {
+                        logUpdateResult(sender, result);
+                    });
+                    break;
+            }
+        });
+    }
+    
+    /**
+     * Log update result
+     */
+    private void logUpdateResult(CommandSender sender, online.demonzdevelopment.update.UpdateManager.UpdateResult result) {
+        if (result.isSuccess()) {
+            plugin.getLogger().info("Update successful: v" + result.getVersion() + " - " + result.getMessage());
+        } else {
+            plugin.getLogger().info("Update status: " + result.getMessage());
+        }
+    }
+    
+    /**
      * Handle credits command - Show plugin creator information
      */
     private void handleCredits(CommandSender sender) {
@@ -303,6 +392,14 @@ public class EconomyCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("dzeconomy.admin") || sender.isOp()) {
                 completions.add("reload");
                 completions.add("credits");
+                completions.add("update");
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("update")) {
+            if (sender.hasPermission("dzeconomy.admin.update") || sender.isOp()) {
+                completions.add("latest");
+                completions.add("previous");
+                completions.add("next");
+                completions.add("auto");
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("convert")) {
             completions.add("money");

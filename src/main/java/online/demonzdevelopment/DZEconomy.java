@@ -282,6 +282,18 @@ public final class DZEconomy extends JavaPlugin {
             // Log status to console
             updateChecker.logUpdateStatus();
         });
+        
+        // Auto-update on start if enabled
+        if (configManager.getConfig().getBoolean("updater.autoOnStart", false)) {
+            getLogger().info("Auto-update on start is enabled. Checking for updates...");
+            online.demonzdevelopment.update.UpdateManager updateManager = 
+                    new online.demonzdevelopment.update.UpdateManager(this);
+            updateManager.autoUpdate().thenAccept(result -> {
+                if (result.isSuccess()) {
+                    getLogger().info("Auto-update completed! Restart server to apply v" + result.getVersion());
+                }
+            });
+        }
     }
     
     /**

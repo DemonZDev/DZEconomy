@@ -81,7 +81,12 @@ permissions:
       dzeconomy.admin.mobcoin.add: true
       dzeconomy.admin.gem.add: true
       dzeconomy.admin.reload: true
+      dzeconomy.admin.update: true
       dzeconomy.admin: true
+  
+  dzeconomy.admin.update:
+    description: Permission to update the plugin
+    default: op
   
   dzeconomy.default:
     description: Default rank permission

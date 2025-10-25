@@ -57,6 +57,12 @@ admin:
   add-success: "{prefix} &aAdded &e{symbol}{amount} {currency} &ato &e{player}&a. New balance: &e{symbol}{balance}"
   add-notify: "{prefix} &aAn admin added &e{symbol}{amount} {currency} &ato your account!"
   reload-success: "{prefix} &aConfiguration reloaded successfully!"
+  update-checking: "{prefix} &eChecking for updates..."
+  update-found: "{prefix} &e&lUPDATE AVAILABLE! &av{version}"
+  update-downloading: "{prefix} &eDownloading update..."
+  update-success: "{prefix} &a&l✓ Update downloaded! Restart to apply."
+  update-failed: "{prefix} &cUpdate failed: {error}"
+  update-latest: "{prefix} &aYou are on the latest version!"
 
 conversion:
   success: "{prefix} &aConverted &e{symbol1}{amount1} {currency1} &ato &e{symbol2}{amount2} {currency2}&a! &7Tax: &e{symbol1}{tax}"
@@ -140,6 +146,7 @@ help:
   economy-admin: |
     &c/economy reload &8- &7Reload configuration (Admin)
     &c/economy version &8- &7Check for updates
+    &c/economy update <version|previous|next|latest|auto> &8- &7Update plugin (Admin)
 
 welcome:
   new-player: |

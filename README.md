@@ -154,6 +154,7 @@ Complete API for third-party plugin integration via Bukkit ServicesManager
 - `dzeconomy.economy.version` - Check version
 - `dzeconomy.admin` - Admin notifications (updates)
 - `dzeconomy.admin.reload` - Reload plugin
+- `dzeconomy.admin.update` - Use /dzeconomy update (Admin)
 - `dzeconomy.admin.money.add` - Add money
 - `dzeconomy.admin.mobcoin.add` - Add mobcoins
 - `dzeconomy.admin.gem.add` - Add gems
@@ -351,6 +352,49 @@ storage:
     username: "root"
     password: "password"
 ```
+
+---
+
+## 🔄 Updater
+
+Admin-only self-updater integrating GitHub Releases for DemonZDev/DZEconomy.
+
+- Command: `/dzeconomy update <version|previous|next|latest|auto>`
+- Permission: `dzeconomy.admin.update` (default: op)
+- Target path: `plugins/update/DZEconomy-v{resolvedVersion}.jar`
+
+### Modes
+- latest: Fetch latest non-draft, non-prerelease, download the JAR asset
+- version: Fetch exact tag v{version}; if already on that version, abort gracefully
+- previous/next: List all releases, semver-sort by tag_name, pick neighbor relative to current version
+- auto: Check latest vs current; download only if newer. Runs on command and optionally on server start
+
+### Safety & Performance
+- Fully async using Java 21 HttpClient with 5s connect/read timeouts
+- Handles 403/429 with exponential backoff
+- Verifies asset size and SHA-256 digest when provided by GitHub assets
+- Never downgrades unless explicitly using previous
+- Strips leading 'v' from tag_name and uses semver compare (major.minor.patch)
+
+### Apply Strategy
+- Primary: Save to update folder; restart required for apply (Paper/Spigot standard)
+- Hot-reload (best-effort): Attempts safe disable, load JAR via PluginManager, then enable. If any step fails, falls back to restart-required flow
+
+### Configuration (config.yml)
+```yaml
+updater:
+  enabled: true           # Enable updater features and commands
+  autoOnStart: false      # Auto-check and download newer release on server start
+  attempt-hot-reload: false  # Try hot-reload; falls back to update folder on failure
+```
+
+### Acceptance
+1. latest downloads newest non-draft, non-prerelease JAR
+2. version fetches exact tag
+3. previous/next select neighbors by semver
+4. auto updates only when newer exists
+5. Restart flow works via plugins/update
+6. Hot-reload attempts gracefully degrade to restart-required if unsafe
 
 ---
 
