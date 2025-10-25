@@ -1,196 +1,220 @@
 package online.demonzdevelopment.data;
 
 import online.demonzdevelopment.currency.CurrencyType;
+import org.bukkit.Bukkit;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Represents all economy data for a single player
+ */
 public class PlayerData {
+    
     private final UUID uuid;
-    private String name;
-    private final Map<CurrencyType, BigDecimal> balances;
-    private final Map<CurrencyType, Long> lastSendTime;
+    private String username;
+    private long firstJoin;
+    private long lastSeen;
+    
+    // Balances for each currency
+    private final Map<CurrencyType, Double> balances;
+    
+    // Statistics
+    private final Map<CurrencyType, Long> moneySent;
+    private final Map<CurrencyType, Long> moneyReceived;
+    
+    // Daily limits tracking
     private final Map<CurrencyType, Integer> dailySendCount;
-    private final Map<CurrencyType, Long> dailyResetTime;
-    private boolean dirty;
-
-    public PlayerData(UUID uuid, String name) {
+    private final Map<CurrencyType, Integer> dailyRequestCount;
+    private long lastDailyReset;
+    
+    // Cooldowns (timestamps)
+    private final Map<CurrencyType, Long> sendCooldowns;
+    private final Map<CurrencyType, Long> requestCooldowns;
+    
+    public PlayerData(UUID uuid) {
         this.uuid = uuid;
-        this.name = name;
-        this.balances = new ConcurrentHashMap<>();
-        this.lastSendTime = new ConcurrentHashMap<>();
-        this.dailySendCount = new ConcurrentHashMap<>();
-        this.dailyResetTime = new ConcurrentHashMap<>();
-        this.dirty = false;
+        this.username = Bukkit.getOfflinePlayer(uuid).getName();
+        this.balances = new HashMap<>();
+        this.moneySent = new HashMap<>();
+        this.moneyReceived = new HashMap<>();
+        this.dailySendCount = new HashMap<>();
+        this.dailyRequestCount = new HashMap<>();
+        this.sendCooldowns = new HashMap<>();
+        this.requestCooldowns = new HashMap<>();
         
+        // Initialize all currencies to 0
         for (CurrencyType type : CurrencyType.values()) {
-            balances.put(type, BigDecimal.ZERO);
-            lastSendTime.put(type, 0L);
+            balances.put(type, 0.0);
+            moneySent.put(type, 0L);
+            moneyReceived.put(type, 0L);
             dailySendCount.put(type, 0);
-            dailyResetTime.put(type, System.currentTimeMillis());
+            dailyRequestCount.put(type, 0);
+            sendCooldowns.put(type, 0L);
+            requestCooldowns.put(type, 0L);
         }
     }
-
+    
+    // Balance methods
+    
+    public double getBalance(CurrencyType currency) {
+        return balances.getOrDefault(currency, 0.0);
+    }
+    
+    public void setBalance(CurrencyType currency, double amount) {
+        balances.put(currency, amount);
+    }
+    
+    public void addBalance(CurrencyType currency, double amount) {
+        balances.put(currency, getBalance(currency) + amount);
+    }
+    
+    public void removeBalance(CurrencyType currency, double amount) {
+        balances.put(currency, getBalance(currency) - amount);
+    }
+    
+    // Statistics
+    
+    public void addMoneySent(CurrencyType currency, double amount) {
+        long current = moneySent.getOrDefault(currency, 0L);
+        moneySent.put(currency, current + (long) amount);
+    }
+    
+    public void addMoneyReceived(CurrencyType currency, double amount) {
+        long current = moneyReceived.getOrDefault(currency, 0L);
+        moneyReceived.put(currency, current + (long) amount);
+    }
+    
+    // Daily limits
+    
+    public int getDailySendCount(CurrencyType currency) {
+        return dailySendCount.getOrDefault(currency, 0);
+    }
+    
+    public void incrementDailySendCount(CurrencyType currency) {
+        dailySendCount.put(currency, getDailySendCount(currency) + 1);
+    }
+    
+    public int getDailyRequestCount(CurrencyType currency) {
+        return dailyRequestCount.getOrDefault(currency, 0);
+    }
+    
+    public void incrementDailyRequestCount(CurrencyType currency) {
+        dailyRequestCount.put(currency, getDailyRequestCount(currency) + 1);
+    }
+    
+    public void resetDailyLimits() {
+        for (CurrencyType type : CurrencyType.values()) {
+            dailySendCount.put(type, 0);
+            dailyRequestCount.put(type, 0);
+        }
+        lastDailyReset = System.currentTimeMillis();
+    }
+    
+    // Cooldowns
+    
+    public long getSendCooldown(CurrencyType currency) {
+        return sendCooldowns.getOrDefault(currency, 0L);
+    }
+    
+    public void setSendCooldown(CurrencyType currency, long timestamp) {
+        sendCooldowns.put(currency, timestamp);
+    }
+    
+    public long getRequestCooldown(CurrencyType currency) {
+        return requestCooldowns.getOrDefault(currency, 0L);
+    }
+    
+    public void setRequestCooldown(CurrencyType currency, long timestamp) {
+        requestCooldowns.put(currency, timestamp);
+    }
+    
+    public boolean isSendCooldownActive(CurrencyType currency, int cooldownSeconds) {
+        long cooldownEnd = getSendCooldown(currency) + (cooldownSeconds * 1000L);
+        return System.currentTimeMillis() < cooldownEnd;
+    }
+    
+    public long getSendCooldownRemaining(CurrencyType currency, int cooldownSeconds) {
+        long cooldownEnd = getSendCooldown(currency) + (cooldownSeconds * 1000L);
+        long remaining = cooldownEnd - System.currentTimeMillis();
+        return Math.max(0, remaining / 1000);
+    }
+    
+    public boolean isRequestCooldownActive(CurrencyType currency, int cooldownSeconds) {
+        long cooldownEnd = getRequestCooldown(currency) + (cooldownSeconds * 1000L);
+        return System.currentTimeMillis() < cooldownEnd;
+    }
+    
+    public long getRequestCooldownRemaining(CurrencyType currency, int cooldownSeconds) {
+        long cooldownEnd = getRequestCooldown(currency) + (cooldownSeconds * 1000L);
+        long remaining = cooldownEnd - System.currentTimeMillis();
+        return Math.max(0, remaining / 1000);
+    }
+    
+    // Getters and setters
+    
     public UUID getUUID() {
         return uuid;
     }
-
-    public String getName() {
-        return name;
+    
+    public String getUsername() {
+        return username;
     }
-
-    public void setName(String name) {
-        this.name = name;
-        this.dirty = true;
+    
+    public void setUsername(String username) {
+        this.username = username;
     }
-
-    public synchronized BigDecimal getBalance(CurrencyType type) {
-        return balances.getOrDefault(type, BigDecimal.ZERO);
+    
+    public long getFirstJoin() {
+        return firstJoin;
     }
-
-    public synchronized void setBalance(CurrencyType type, BigDecimal amount) {
-        balances.put(type, amount);
-        this.dirty = true;
+    
+    public void setFirstJoin(long firstJoin) {
+        this.firstJoin = firstJoin;
     }
-
-    public synchronized void addBalance(CurrencyType type, BigDecimal amount) {
-        BigDecimal current = getBalance(type);
-        setBalance(type, current.add(amount));
+    
+    public long getLastSeen() {
+        return lastSeen;
     }
-
-    public synchronized void subtractBalance(CurrencyType type, BigDecimal amount) {
-        BigDecimal current = getBalance(type);
-        setBalance(type, current.subtract(amount));
+    
+    public void setLastSeen(long lastSeen) {
+        this.lastSeen = lastSeen;
     }
-
-    public synchronized boolean hasBalance(CurrencyType type, BigDecimal amount) {
-        return getBalance(type).compareTo(amount) >= 0;
+    
+    public long getLastDailyReset() {
+        return lastDailyReset;
     }
-
-    public long getLastSendTime(CurrencyType type) {
-        return lastSendTime.getOrDefault(type, 0L);
+    
+    public void setLastDailyReset(long lastDailyReset) {
+        this.lastDailyReset = lastDailyReset;
     }
-
-    public void setLastSendTime(CurrencyType type, long time) {
-        lastSendTime.put(type, time);
-        this.dirty = true;
+    
+    public Map<CurrencyType, Double> getBalances() {
+        return balances;
     }
-
-    public int getDailySendCount(CurrencyType type) {
-        return dailySendCount.getOrDefault(type, 0);
+    
+    public Map<CurrencyType, Long> getMoneySent() {
+        return moneySent;
     }
-
-    public void incrementDailySendCount(CurrencyType type) {
-        int current = getDailySendCount(type);
-        dailySendCount.put(type, current + 1);
-        this.dirty = true;
+    
+    public Map<CurrencyType, Long> getMoneyReceived() {
+        return moneyReceived;
     }
-
-    public void resetDailySendCount(CurrencyType type) {
-        dailySendCount.put(type, 0);
-        dailyResetTime.put(type, System.currentTimeMillis());
-        this.dirty = true;
+    
+    public Map<CurrencyType, Integer> getDailySendCounts() {
+        return dailySendCount;
     }
-
-    public long getDailyResetTime(CurrencyType type) {
-        return dailyResetTime.getOrDefault(type, System.currentTimeMillis());
+    
+    public Map<CurrencyType, Integer> getDailyRequestCounts() {
+        return dailyRequestCount;
     }
-
-    public boolean isDirty() {
-        return dirty;
+    
+    public Map<CurrencyType, Long> getSendCooldowns() {
+        return sendCooldowns;
     }
-
-    public void setDirty(boolean dirty) {
-        this.dirty = dirty;
-    }
-
-    public Map<String, Object> serialize() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("uuid", uuid.toString());
-        data.put("name", name);
-        
-        Map<String, String> balanceMap = new HashMap<>();
-        for (Map.Entry<CurrencyType, BigDecimal> entry : balances.entrySet()) {
-            balanceMap.put(entry.getKey().getKey(), entry.getValue().toPlainString());
-        }
-        data.put("balances", balanceMap);
-        
-        Map<String, Long> sendTimeMap = new HashMap<>();
-        for (Map.Entry<CurrencyType, Long> entry : lastSendTime.entrySet()) {
-            sendTimeMap.put(entry.getKey().getKey(), entry.getValue());
-        }
-        data.put("last_send_time", sendTimeMap);
-        
-        Map<String, Integer> sendCountMap = new HashMap<>();
-        for (Map.Entry<CurrencyType, Integer> entry : dailySendCount.entrySet()) {
-            sendCountMap.put(entry.getKey().getKey(), entry.getValue());
-        }
-        data.put("daily_send_count", sendCountMap);
-        
-        Map<String, Long> resetTimeMap = new HashMap<>();
-        for (Map.Entry<CurrencyType, Long> entry : dailyResetTime.entrySet()) {
-            resetTimeMap.put(entry.getKey().getKey(), entry.getValue());
-        }
-        data.put("daily_reset_time", resetTimeMap);
-        
-        return data;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PlayerData deserialize(Map<String, Object> data) {
-        UUID uuid = UUID.fromString((String) data.get("uuid"));
-        String name = (String) data.get("name");
-        
-        PlayerData playerData = new PlayerData(uuid, name);
-        
-        if (data.containsKey("balances")) {
-            Map<String, Object> balanceMap = (Map<String, Object>) data.get("balances");
-            for (Map.Entry<String, Object> entry : balanceMap.entrySet()) {
-                CurrencyType type = CurrencyType.fromString(entry.getKey());
-                if (type != null) {
-                    BigDecimal amount = new BigDecimal(entry.getValue().toString());
-                    playerData.setBalance(type, amount);
-                }
-            }
-        }
-        
-        if (data.containsKey("last_send_time")) {
-            Map<String, Object> sendTimeMap = (Map<String, Object>) data.get("last_send_time");
-            for (Map.Entry<String, Object> entry : sendTimeMap.entrySet()) {
-                CurrencyType type = CurrencyType.fromString(entry.getKey());
-                if (type != null) {
-                    long time = ((Number) entry.getValue()).longValue();
-                    playerData.setLastSendTime(type, time);
-                }
-            }
-        }
-        
-        if (data.containsKey("daily_send_count")) {
-            Map<String, Object> sendCountMap = (Map<String, Object>) data.get("daily_send_count");
-            for (Map.Entry<String, Object> entry : sendCountMap.entrySet()) {
-                CurrencyType type = CurrencyType.fromString(entry.getKey());
-                if (type != null) {
-                    int count = ((Number) entry.getValue()).intValue();
-                    playerData.dailySendCount.put(type, count);
-                }
-            }
-        }
-        
-        if (data.containsKey("daily_reset_time")) {
-            Map<String, Object> resetTimeMap = (Map<String, Object>) data.get("daily_reset_time");
-            for (Map.Entry<String, Object> entry : resetTimeMap.entrySet()) {
-                CurrencyType type = CurrencyType.fromString(entry.getKey());
-                if (type != null) {
-                    long time = ((Number) entry.getValue()).longValue();
-                    playerData.dailyResetTime.put(type, time);
-                }
-            }
-        }
-        
-        playerData.setDirty(false);
-        return playerData;
+    
+    public Map<CurrencyType, Long> getRequestCooldowns() {
+        return requestCooldowns;
     }
 }

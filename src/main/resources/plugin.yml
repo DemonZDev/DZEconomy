@@ -1,36 +1,88 @@
 name: DZEconomy
-version: 1.0.0
+version: '1.1.1'
 main: online.demonzdevelopment.DZEconomy
 api-version: '1.21'
-author: DemonzDevelopment
-description: Multi-currency economy plugin with rank-based permissions
+author: DemonZ Development
+description: Professional multi-currency economy plugin
+website: https://demonzdevelopment.online
 softdepend: [PlaceholderAPI, LuckPerms]
 
 commands:
   money:
     description: Money currency commands
-    usage: /money [balance|send|request|add|accept|deny|help]
+    usage: /<command> [balance|send|request|accept|deny|add|help]
+    aliases: [bal, balance]
   mobcoin:
     description: MobCoin currency commands
-    usage: /mobcoin [balance|send|request|add|accept|deny|help]
+    usage: /<command> [balance|send|request|accept|deny|add|help]
+    aliases: [mc, mobcoins]
   gem:
     description: Gem currency commands
-    usage: /gem [balance|send|request|add|accept|deny|help]
+    usage: /<command> [balance|send|request|accept|deny|add|help]
+    aliases: [gems]
   economy:
-    description: Convert between currencies
-    usage: /economy <from> <to> <amount>
-  dzeconomy:
-    description: Admin commands
-    usage: /dzeconomy [reload|debug]
-    aliases: [dze, dzeco]
+    description: Economy management commands
+    usage: /<command> [convert|reload|version]
+    aliases: [eco, dzeco]
 
 permissions:
-  dzeconomy.admin:
-    description: Access to admin commands
-    default: op
-  dzeconomy.add:
-    description: Add currency to players
-    default: op
+  dzeconomy.*:
+    description: All DZEconomy permissions
+    children:
+      dzeconomy.money.*: true
+      dzeconomy.mobcoin.*: true
+      dzeconomy.gem.*: true
+      dzeconomy.economy.*: true
+      dzeconomy.admin.*: true
+  
+  dzeconomy.money.*:
+    description: All money permissions
+    children:
+      dzeconomy.money.balance: true
+      dzeconomy.money.balance.others: true
+      dzeconomy.money.send: true
+      dzeconomy.money.request: true
+      dzeconomy.money.accept: true
+      dzeconomy.money.deny: true
+      dzeconomy.money.help: true
+  
+  dzeconomy.mobcoin.*:
+    description: All mobcoin permissions
+    children:
+      dzeconomy.mobcoin.balance: true
+      dzeconomy.mobcoin.balance.others: true
+      dzeconomy.mobcoin.send: true
+      dzeconomy.mobcoin.request: true
+      dzeconomy.mobcoin.accept: true
+      dzeconomy.mobcoin.deny: true
+      dzeconomy.mobcoin.help: true
+  
+  dzeconomy.gem.*:
+    description: All gem permissions
+    children:
+      dzeconomy.gem.balance: true
+      dzeconomy.gem.balance.others: true
+      dzeconomy.gem.send: true
+      dzeconomy.gem.request: true
+      dzeconomy.gem.accept: true
+      dzeconomy.gem.deny: true
+      dzeconomy.gem.help: true
+  
+  dzeconomy.economy.*:
+    description: All economy permissions
+    children:
+      dzeconomy.economy.convert: true
+      dzeconomy.economy.version: true
+  
+  dzeconomy.admin.*:
+    description: All admin permissions
+    children:
+      dzeconomy.admin.money.add: true
+      dzeconomy.admin.mobcoin.add: true
+      dzeconomy.admin.gem.add: true
+      dzeconomy.admin.reload: true
+      dzeconomy.admin: true
+  
   dzeconomy.default:
-    description: Default rank permissions
+    description: Default rank permission
     default: true

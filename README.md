@@ -1,300 +1,423 @@
-DZEconomy - Advanced Multi-Currency Economy for PaperMC
+# DZEconomy - Professional Multi-Currency Economy Plugin
 
-Revolutionize Your Server's Economy
+![Version](https://img.shields.io/badge/version-1.1.1-brightgreen)
+![Minecraft](https://img.shields.io/badge/minecraft-1.21.1-blue)
+![Java](https://img.shields.io/badge/java-21-orange)
 
-Tired of basic, single-currency economy plugins that limit your server's potential? DZEconomy is here to transform your economic landscape with a sophisticated, multi-currency system designed specifically for modern PaperMC servers (1.21.1). Whether you're running a complex RPG server, a competitive PvP network, or a vibrant trading hub, DZEconomy provides the robust foundation your server deserves.
-
-🏦 Three Distinct Economies, One Powerful Plugin
-
-DZEconomy introduces three fully independent currency systems that can operate separately or interact seamlessly:
-
-· 💰 Money - Your primary currency for everyday transactions, trading, and server economy
-· ⚔️ MobCoin - Combat-focused currency earned through PvE activities and mob hunting
-· 💎 Gems - Premium currency for high-value transactions and exclusive items
-
-Each currency maintains its own balance system, commands, and economic rules while allowing players to exchange between them through a sophisticated conversion system.
-
-🎯 Advanced Features for Modern Servers
-
-Rank-Based Economic Progression
-
-Integrated deeply with LuckPerms, DZEconomy allows you to create tiered economic systems where higher-ranked players enjoy:
-
-· Increased transaction limits
-· Reduced taxes on transfers
-· Shorter cooldowns between transactions
-· Special currency bonuses and perks
-
-Dynamic Player Interactions
-
-Go beyond simple payments with our comprehensive transaction system:
-
-· Send funds directly to other players
-· Request payments with accept/deny functionality
-· Secure transactions with configurable cooldowns and limits
-· Transaction logging for administrative oversight
-
-Thrilling PvP Economy
-
-Intensify player combat with our full PvP economy implementation:
-
-· Players drop all currencies on death
-· Victors receive the spoils directly
-· Creates high-stakes PvP encounters
-· Configurable for different game modes
-
-Rewarding PvE Gameplay
-
-Transform mob hunting into an economic activity:
-
-· Custom MobCoin rewards for every mob type
-· Special bonuses for boss mobs
-· Configurable reward rates in mob-rewards.yml
-· Encourages diverse gameplay activities
-
-🔌 Seamless Integrations
-
-PlaceholderAPI Support
-
-Display economic information anywhere with our comprehensive placeholders:
-
-· %dz_money%, %dz_mobcoin%, %dz_gem% for currency balances
-· %dz_rank% for player's economic rank
-· Perfect for scoreboards, chat, and GUI displays
-
-Developer-Friendly API
-
-Build upon DZEconomy with our full asynchronous API:
-
-```java
-// Easy integration for other plugins
-economy.depositAsync(player, CurrencyType.MONEY, amount, "Quest Reward");
-economy.getBalanceAsync(player, CurrencyType.MOBCOIN);
-```
-
-⚙️ Complete Customization & Control
-
-Extensive Configuration Options
-
-· config.yml - Currency settings, conversion rates, database configuration
-· ranks.yml - Rank-based limits, taxes, cooldowns, and bonuses
-· mob-rewards.yml - Mob-specific rewards and bonus configurations
-· messages.yml - Fully customizable messages with color codes
-
-Flexible Storage Solutions
-
-Choose the database backend that fits your needs:
-
-· YAML flat-file storage for smaller servers
-· MySQL support for large networks and cross-server synchronization
-· Async operations for optimal performance
-
-🎮 Player-Friendly Commands
-
-Intuitive Command Structure
-
-· /money balance|send|request|accept|deny - Manage Money currency
-· /mobcoin balance|send|request|accept|deny - Handle MobCoin transactions
-· /gem balance|send|request|accept|deny - Control Gem currency
-· /economy <from> <to> <amount> - Convert between currencies
-· /dzeconomy reload|debug - Administrative controls
-
-🚀 Quick Start Guide
-
-Installation
-
-1. Download DZEconomy.jar from Modrinth
-2. Place in your server's plugins/ folder
-3. Restart your server
-4. Configure the YAML files to match your server's needs
-5. (Optional) Install PlaceholderAPI and LuckPerms for full functionality
-
-Basic Configuration
-
-After first run, customize:
-
-· Currency names and symbols in config.yml
-· Rank benefits and limits in ranks.yml
-· Mob rewards in mob-rewards.yml
-· Server messages in messages.yml
-
-💻 For Developers
-
-DZEconomy offers a comprehensive, fully-asynchronous API that allows other plugins to seamlessly integrate with our economic system:
-
-```java
-// Get the API instance
-EconomyService economy = Bukkit.getServicesManager().getRegistration(EconomyService.class).getProvider();
-
-// Perform async transactions
-economy.depositAsync(playerUUID, CurrencyType.MONEY, amount, "Quest Reward")
-    .thenAccept(result -> {
-        if (result.isSuccess()) {
-            // Handle success
-        }
-    });
-```
-
-🛡️ Reliable & Production-Ready
-
-Built with stability and performance in mind:
-
-· Full async operations to prevent server lag
-· Comprehensive error handling and logging
-· SQL injection protection and secure coding practices
-· Regular updates and active maintenance
-· Thorough testing on PaperMC 1.21.1
-
-📊 Perfect For Various Server Types
-
-· RPG Servers - Use different currencies for different aspects of your game (combat, trading, premium content)
-· PvP Networks - High-stakes economy with full currency drops on death
-· MINIGAME NETWORKS - Reward players across different game modes with appropriate currencies
-· SURVIVAL ECONOMIES - Create complex trading systems with currency conversion
-· HYBRID SERVERS - Support multiple gameplay styles within one economic framework
-
-🔒 Security & Permissions
-
-Comprehensive permission system ensures proper access control:
-
-· dzeconomy.default - Basic player permissions
-· dzeconomy.add - Add currency to players (admin)
-· dzeconomy.admin - Full administrative access
-· Rank-specific permissions via LuckPerms integration
-
-🌟 Why Choose DZEconomy?
-
-Unlike other economy plugins that offer basic functionality, DZEconomy provides:
-
-· True multi-currency support with independent economies
-· Deep LuckPerms integration for progressive economic systems
-· Comprehensive PvP and PvE economic integration
-· Full async API for developers
-· Extensive customization options
-· Active development and community support
-
-📞 Support & Community
-
-Need help? Have suggestions? Join our community!
-
-· GitHub Repository for bug reports and feature requests
-· Regular updates with new features and improvements
-· Active development with responsive support
+A professional, production-ready multi-currency economy plugin for PaperMC servers featuring **Money**, **MobCoin**, and **Gems** with advanced rank-based systems, interactive request GUIs, PVP transfers, conversion mechanics, and comprehensive API integration.
 
 ---
 
-Transform your server's economy today with DZEconomy - the professional-grade economic solution for modern Minecraft servers.
+## 🌟 Features
 
-All rights reserved © DemonzDevelopment 2024
-1. Download DZEconomy.jar
-2. Place in your server's `plugins/` folder
-3. Restart the server
-4. Configure `config.yml`, `ranks.yml`, `mob-rewards.yml`, and `messages.yml`
-5. (Optional) Install PlaceholderAPI and LuckPerms for full functionality
+### **Multi-Currency System**
+- **Money ($)** - Primary economy currency
+- **MobCoin (MC)** - Earned by killing mobs
+- **Gems (◆)** - Premium rare currency
 
-## Commands
+### **Advanced Number Formatting**
+- Automatic decimal truncation to 2 places
+- Short form notation (1K, 1M, 1B, 1T, 1Q, etc.)
+- Supports up to 10^100 (1 Googol)
 
-### Money Commands
-- `/money balance` - Check your money balance
-- `/money send <player> <amount>` - Send money to another player
-- `/money request <player> <amount>` - Request money from another player
-- `/money accept` - Accept a pending request
-- `/money deny` - Deny a pending request
-- `/money add <player> <amount>` - Add money (admin only)
-- `/money help` - Show help menu
+### **Rank-Based Economy**
+- Full LuckPerms integration
+- Per-currency transfer tax rates
+- Configurable cooldowns and daily limits
+- Boss kill bonuses (MobCoin)
+- Conversion tax rates
 
-### MobCoin Commands
-Same structure as money commands, use `/mobcoin` instead.
+### **Currency Transfers**
+- Player-to-player sending
+- Request system with interactive GUI
+- 120-second request timeout
+- Tax system based on sender's rank
+- Daily send/request limits
 
-### Gem Commands
-Same structure as money commands, use `/gem` instead.
+### **Interactive Request GUI**
+- Real-time countdown display
+- Accept/Deny buttons
+- Respects existing open inventories
+- Configurable sounds and intervals
 
-### Economy Commands
-- `/economy <from> <to> <amount>` - Convert between currencies
-  - Example: `/economy money mobcoin 1000`
+### **Mob Kill Rewards**
+- Neutral mobs: 1 MC
+- Easy hostile: 2 MC
+- Hard hostile: 4 MC
+- Boss mobs: 50 MC + rank bonus
 
-### Admin Commands
-- `/dzeconomy reload` - Reload configuration
-- `/dzeconomy debug` - Toggle debug mode
+### **PVP Economy**
+- Transfer all currencies on player kill
+- Optional broadcast for large transfers
+- Configurable per-currency
 
-## Placeholders
+### **Currency Conversion**
+- Bidirectional conversion between all currencies
+- Configurable exchange rates
+- Rank-based conversion tax
 
-- `%dz_money%` - Player's money balance
-- `%dz_mobcoin%` - Player's MobCoin balance
-- `%dz_gem%` - Player's Gem balance
-- `%dz_rank%` - Player's economy rank
+### **Storage Options**
+- **FlatFile** (YAML) - Default
+- **SQLite** - Local database
+- **MySQL** - Remote database with HikariCP pooling
 
-## Configuration
+### **PlaceholderAPI Integration**
+- `%dz_money%` - Short form balance
+- `%dz_money_full%` - Full balance
+- `%dz_money_formatted%` - With symbol
+- `%dz_mobcoin%`, `%dz_gem%` - Same format
+- `%dz_rank%` - Player's rank display name
+- `%dz_rank_priority%` - Rank priority
 
-### config.yml
-Configure currencies, conversion rates, database settings, and display format.
+### **Public API**
+Complete API for third-party plugin integration via Bukkit ServicesManager
 
-### ranks.yml
-Define rank-based limits, taxes, cooldowns, and bonuses per currency.
+---
 
-### mob-rewards.yml
-Set MobCoin rewards for different mob categories.
+## 📦 Installation
 
-### messages.yml
-Customize all plugin messages with color codes.
+1. **Download** DZEconomy JAR file
+2. **Place** in your server's `plugins` folder
+3. **Install dependencies**:
+   - [LuckPerms](https://luckperms.net/) (Required)
+   - [PlaceholderAPI](https://www.spigotmc.org/resources/6245/) (Optional)
+4. **Restart** your server
+5. **Configure** files in `plugins/DZEconomy/`
 
-## Developer API
+---
 
-### Getting the API
+## 🎮 Commands
 
+### **Money Commands**
+```
+/money balance [player]          - Check balance
+/money send <player> <amount>    - Send money
+/money request <player> <amount> - Request money
+/money accept                    - Accept pending request
+/money deny                      - Deny pending request
+/money add <player> <amount>     - Add money (Admin)
+/money help                      - Show help menu
+```
+**Aliases:** `/bal`, `/balance`
+
+### **MobCoin Commands**
+```
+/mobcoin balance [player]          - Check balance
+/mobcoin send <player> <amount>    - Send mobcoins
+/mobcoin request <player> <amount> - Request mobcoins
+/mobcoin accept                    - Accept pending request
+/mobcoin deny                      - Deny pending request
+/mobcoin add <player> <amount>     - Add mobcoins (Admin)
+```
+**Aliases:** `/mc`, `/mobcoins`
+
+### **Gem Commands**
+```
+/gem balance [player]          - Check balance
+/gem send <player> <amount>    - Send gems
+/gem request <player> <amount> - Request gems
+/gem accept                    - Accept pending request
+/gem deny                      - Deny pending request
+/gem add <player> <amount>     - Add gems (Admin)
+```
+**Aliases:** `/gems`
+
+### **Economy Commands**
+```
+/economy convert <from> <to> <amount> - Convert currencies
+/economy version                      - Check plugin version and updates
+/economy reload                       - Reload configuration (Admin)
+```
+**Example:** `/economy convert money gem 10000`
+**Aliases:** `/eco`, `/dzeco`
+
+---
+
+## 🔑 Permissions
+
+### **Money Permissions**
+- `dzeconomy.money.balance` - Check own balance
+- `dzeconomy.money.balance.others` - Check others' balance
+- `dzeconomy.money.send` - Send money
+- `dzeconomy.money.request` - Request money
+- `dzeconomy.money.accept` - Accept requests
+- `dzeconomy.money.deny` - Deny requests
+
+### **MobCoin Permissions**
+- `dzeconomy.mobcoin.*` - Same structure as money
+
+### **Gem Permissions**
+- `dzeconomy.gem.*` - Same structure as money
+
+### **Economy Permissions**
+- `dzeconomy.economy.convert` - Convert currencies
+- `dzeconomy.economy.version` - Check version
+- `dzeconomy.admin` - Admin notifications (updates)
+- `dzeconomy.admin.reload` - Reload plugin
+- `dzeconomy.admin.money.add` - Add money
+- `dzeconomy.admin.mobcoin.add` - Add mobcoins
+- `dzeconomy.admin.gem.add` - Add gems
+
+### **Rank Permissions**
+- `dzeconomy.default` - Default rank (granted by default)
+
+---
+
+## ⚙️ Configuration
+
+### **config.yml**
+Main plugin configuration for storage, currencies, display, PVP, GUI, integrations, and limits.
+
+**Key Settings:**
+```yaml
+# Update checker
+update-checker:
+  enabled: true
+  notify-on-join: true
+
+storage:
+  type: FLATFILE  # FLATFILE, SQLITE, MYSQL
+  auto-save-interval: 5  # Minutes
+
+currencies:
+  money:
+    symbol: "$"
+    starting-balance: 50000.00
+  mobcoin:
+    symbol: "MC"
+    starting-balance: 500.00
+  gem:
+    symbol: "◆"
+    starting-balance: 5.00
+
+conversion:
+  enabled: true
+  rates:
+    gem-to-mobcoin: 100.0
+    gem-to-money: 10000.0
+    mobcoin-to-money: 100.0
+
+pvp-economy:
+  enabled: true
+  transfer-money: true
+  transfer-mobcoins: true
+  transfer-gems: true
+```
+
+### **ranks.yml**
+Define unlimited custom ranks with per-currency settings.
+
+**Example Rank:**
+```yaml
+ranks:
+  vip:
+    display-name: "&a&lVIP"
+    priority: 20
+    money:
+      transfer-tax: 1.0
+      transfer-cooldown: 60
+      daily-transfer-limit: 20
+      daily-request-limit: 20
+    mobcoin:
+      transfer-tax: 1.0
+      transfer-cooldown: 60
+      daily-transfer-limit: 20
+      daily-request-limit: 20
+      boss-kill-bonus: 10.0
+    gem:
+      transfer-tax: 1.0
+      transfer-cooldown: 60
+      daily-transfer-limit: 20
+      daily-request-limit: 20
+    conversion:
+      enabled: true
+      tax: 0.5
+```
+
+### **mob-rewards.yml**
+Configure mob kill rewards by category.
+
+**Categories:**
+- **Neutral** (1 MC): Passive animals
+- **Easy** (2 MC): Common hostile mobs
+- **Hard** (4 MC): Challenging hostile mobs
+- **Boss** (50 MC): Ender Dragon, Wither, Warden
+
+### **messages.yml**
+Fully customizable messages with color codes and placeholders.
+
+---
+
+## 🔌 API Usage
+
+### **Accessing the API**
 ```java
-import online.demonzdevelopment.api.EconomyService;
+import online.demonzdevelopment.api.DZEconomyAPI;
+import online.demonzdevelopment.currency.CurrencyType;
 import org.bukkit.Bukkit;
 
-EconomyService economyAPI = Bukkit.getServicesManager().getRegistration(EconomyService.class).getProvider();
+// Get API instance
+DZEconomyAPI api = Bukkit.getServicesManager()
+    .getRegistration(DZEconomyAPI.class)
+    .getProvider();
 ```
 
-### Example Usage
-
+### **Example Operations**
 ```java
-import online.demonzdevelopment.api.EconomyService;
-import online.demonzdevelopment.api.TransactionResult;
-import online.demonzdevelopment.currency.CurrencyType;
-import java.math.BigDecimal;
-import java.util.UUID;
+UUID player = playerObj.getUniqueId();
 
-public class MyPlugin extends JavaPlugin {
-    private EconomyService economy;
-    
-    @Override
-    public void onEnable() {
-        RegisteredServiceProvider<EconomyService> rsp = 
-            Bukkit.getServicesManager().getRegistration(EconomyService.class);
-        
-        if (rsp != null) {
-            economy = rsp.getProvider();
-        }
-    }
-    
-    public void rewardPlayer(UUID player, BigDecimal amount) {
-        economy.depositAsync(player, CurrencyType.MONEY, amount, "Quest Reward")
-            .thenAccept(result -> {
-                if (result.isSuccess()) {
-                    getLogger().info("Rewarded player with " + amount);
-                }
-            });
-    }
-    
-    public void checkBalance(UUID player) {
-        economy.getBalanceAsync(player, CurrencyType.MONEY)
-            .thenAccept(balance -> {
-                getLogger().info("Player balance: " + balance);
-            });
-    }
+// Get balance
+double balance = api.getBalance(player, CurrencyType.MONEY);
+
+// Check balance
+if (api.hasBalance(player, CurrencyType.MONEY, 1000.0)) {
+    // Player has at least 1000 money
 }
+
+// Add currency
+api.addCurrency(player, CurrencyType.MOBCOIN, 100.0);
+
+// Remove currency
+api.removeCurrency(player, CurrencyType.GEM, 5.0);
+
+// Transfer between players
+api.transferCurrency(sender, receiver, CurrencyType.MONEY, 500.0);
+
+// Convert currencies
+api.convertCurrency(player, CurrencyType.MONEY, CurrencyType.GEM, 10000.0);
+
+// Get player rank
+Rank rank = api.getPlayerRank(player);
+
+// Format currency
+String formatted = api.formatCurrency(1500.0, CurrencyType.MONEY);
+// Returns: "$1.5K"
 ```
 
-## Permissions
+---
 
-- `dzeconomy.default` - Default rank permissions (default: true)
-- `dzeconomy.add` - Add currency to players (default: op)
-- `dzeconomy.admin` - Access admin commands (default: op)
+## 📊 Exchange Rates
 
-## Support
+**Default Rates:**
+- 1 Gem = 100 MobCoins
+- 1 Gem = 10,000 Money
+- 1 MobCoin = 100 Money
 
-For support, feature requests, or bug reports, please visit our GitHub repository.
+All rates are fully configurable in `config.yml`.
+
+---
+
+## 🎯 Validation System
+
+All transactions follow strict validation chains:
+
+1. **UUID Validation** - Verify players exist
+2. **Online Check** - Ensure required players are online
+3. **Self-Prevention** - Block self-transactions
+4. **Amount Validation** - Check amount > 0
+5. **Balance Check** - Verify sufficient funds
+6. **Tax Calculation** - Compute rank-based tax
+7. **Total Check** - Verify amount + tax available
+8. **Limit Check** - Ensure daily limits not exceeded
+9. **Cooldown Check** - Verify cooldown expired
+
+---
+
+## 🗄️ Storage
+
+### **FlatFile (Default)**
+- Location: `plugins/DZEconomy/data/players/[UUID].yml`
+- One file per player
+- No external dependencies
+
+### **SQLite**
+- Location: `plugins/DZEconomy/data/economy.db`
+- Local database file
+- Better performance for large servers
+
+### **MySQL**
+- Remote database support
+- HikariCP connection pooling
+- Recommended for networks
+
+Configure in `config.yml`:
+```yaml
+storage:
+  type: MYSQL
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "dzeconomy"
+    username: "root"
+    password: "password"
+```
+
+---
+
+## 🔧 Technical Details
+
+- **Platform:** PaperMC/Bukkit 1.21.1
+- **Java Version:** 21
+- **Build System:** Gradle with Shadow plugin
+- **Dependencies:**
+  - LuckPerms API 5.4
+  - PlaceholderAPI 2.11.6
+  - HikariCP 5.1.0 (bundled)
+  - SQLite JDBC 3.45.0 (bundled)
+
+---
+
+## 📝 Notes
+
+- All commands are **case-insensitive**
+- Numbers support **K/M/B/T** suffixes (e.g., `1.5k = 1500`)
+- Request GUI **respects existing open inventories**
+- Daily limits reset at configured time (default: 00:00)
+- Auto-save runs every 5 minutes by default
+- PVP transfers are **instant** on kill
+
+---
+
+## 🐛 Support
+
+For issues, questions, or feature requests:
+- **Author:** DemonZ Development
+- **Version:** 1.1.1
+- **Website:** https://demonzdevelopment.online
+
+---
+
+## 📜 License
+
+This plugin is proprietary software. All rights reserved.
+
+---
+
+## 🎉 Features Showcase
+
+```
+[DZEconomy] Welcome to the server, Steve!
+[DZEconomy] You've received:
+[DZEconomy]   • $50,000 Money
+[DZEconomy]   • 500 MobCoins
+[DZEconomy]   • 5 Gems
+
+> /money send Alex 1000
+[DZEconomy] Successfully sent $1,000 to Alex! Tax: $50
+
+> /mobcoin request Steve 500
+[DZEconomy] Request sent to Steve for 500 MC!
+
+> /economy convert money gem 10000
+[DZEconomy] Converted $10,000 to 1 Gem! Tax: $300
+
+> Killed Zombie
+[DZEconomy] Killed Zombie: +2 MobCoin
+
+> Killed Ender Dragon
+[DZEconomy] BOSS KILL! Killed Ender Dragon: +55 MobCoin (+10% rank bonus)
+```
+
+---
+
+**Enjoy DZEconomy! 🎮💰**

@@ -3,18 +3,40 @@ package online.demonzdevelopment.storage;
 import online.demonzdevelopment.data.PlayerData;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
+/**
+ * Abstract storage provider interface for different storage types
+ */
 public interface StorageProvider {
+    
+    /**
+     * Initialize the storage system
+     */
     void initialize();
     
-    CompletableFuture<PlayerData> loadPlayerData(UUID uuid);
+    /**
+     * Load player data from storage
+     * @return PlayerData object or null if not found
+     */
+    PlayerData loadPlayerData(UUID uuid);
     
-    CompletableFuture<Void> savePlayerData(PlayerData data);
+    /**
+     * Save player data to storage
+     */
+    void savePlayerData(PlayerData playerData);
     
-    CompletableFuture<Boolean> playerExists(UUID uuid);
+    /**
+     * Check if player data exists
+     */
+    boolean playerDataExists(UUID uuid);
     
-    CompletableFuture<UUID> getUUIDByName(String name);
+    /**
+     * Delete player data
+     */
+    void deletePlayerData(UUID uuid);
     
+    /**
+     * Close storage connections
+     */
     void close();
 }

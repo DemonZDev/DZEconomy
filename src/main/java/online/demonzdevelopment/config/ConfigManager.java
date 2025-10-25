@@ -1,107 +1,169 @@
 package online.demonzdevelopment.config;
 
 import online.demonzdevelopment.DZEconomy;
-import online.demonzdevelopment.currency.CurrencyType;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.math.BigDecimal;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
+/**
+ * Manages all plugin configuration files
+ */
 public class ConfigManager {
+    
     private final DZEconomy plugin;
+    
     private FileConfiguration config;
-
+    private FileConfiguration ranks;
+    private FileConfiguration mobRewards;
+    private FileConfiguration messages;
+    
+    private File configFile;
+    private File ranksFile;
+    private File mobRewardsFile;
+    private File messagesFile;
+    
     public ConfigManager(DZEconomy plugin) {
         this.plugin = plugin;
     }
-
-    public void load() {
-        plugin.reloadConfig();
-        this.config = plugin.getConfig();
+    
+    /**
+     * Load all configuration files
+     */
+    public void loadAll() {
+        // Create plugin folder if it doesn't exist
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdirs();
+        }
+        
+        // Load each config file
+        loadConfig();
+        loadRanks();
+        loadMobRewards();
+        loadMessages();
     }
-
-    public boolean isDebugMode() {
-        return config.getBoolean("debug", false);
+    
+    /**
+     * Load main config.yml
+     */
+    private void loadConfig() {
+        configFile = new File(plugin.getDataFolder(), "config.yml");
+        
+        if (!configFile.exists()) {
+            plugin.saveResource("config.yml", false);
+        }
+        
+        config = YamlConfiguration.loadConfiguration(configFile);
+        
+        // Load defaults
+        InputStream defConfigStream = plugin.getResource("config.yml");
+        if (defConfigStream != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream));
+            config.setDefaults(defConfig);
+        }
     }
-
-    public int getAutoSaveInterval() {
-        return config.getInt("auto-save-interval", 5);
+    
+    /**
+     * Load ranks.yml
+     */
+    private void loadRanks() {
+        ranksFile = new File(plugin.getDataFolder(), "ranks.yml");
+        
+        if (!ranksFile.exists()) {
+            plugin.saveResource("ranks.yml", false);
+        }
+        
+        ranks = YamlConfiguration.loadConfiguration(ranksFile);
     }
-
-    public boolean isDatabaseEnabled() {
-        return config.getBoolean("database.enable", false);
+    
+    /**
+     * Load mob-rewards.yml
+     */
+    private void loadMobRewards() {
+        mobRewardsFile = new File(plugin.getDataFolder(), "mob-rewards.yml");
+        
+        if (!mobRewardsFile.exists()) {
+            plugin.saveResource("mob-rewards.yml", false);
+        }
+        
+        mobRewards = YamlConfiguration.loadConfiguration(mobRewardsFile);
     }
-
-    public String getDatabaseType() {
-        return config.getString("database.type", "MySQL");
+    
+    /**
+     * Load messages.yml
+     */
+    private void loadMessages() {
+        messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        
+        if (!messagesFile.exists()) {
+            plugin.saveResource("messages.yml", false);
+        }
+        
+        messages = YamlConfiguration.loadConfiguration(messagesFile);
     }
-
-    public String getDatabaseHost() {
-        return config.getString("database.ip", "localhost");
+    
+    /**
+     * Save a configuration file
+     */
+    public void save(ConfigType type) {
+        try {
+            switch (type) {
+                case CONFIG:
+                    config.save(configFile);
+                    break;
+                case RANKS:
+                    ranks.save(ranksFile);
+                    break;
+                case MOB_REWARDS:
+                    mobRewards.save(mobRewardsFile);
+                    break;
+                case MESSAGES:
+                    messages.save(messagesFile);
+                    break;
+            }
+        } catch (IOException e) {
+            plugin.getLogger().severe("Failed to save " + type.name().toLowerCase() + ".yml: " + e.getMessage());
+        }
     }
-
-    public int getDatabasePort() {
-        return config.getInt("database.port", 3306);
+    
+    /**
+     * Reload all configuration files
+     */
+    public void reloadAll() {
+        config = YamlConfiguration.loadConfiguration(configFile);
+        ranks = YamlConfiguration.loadConfiguration(ranksFile);
+        mobRewards = YamlConfiguration.loadConfiguration(mobRewardsFile);
+        messages = YamlConfiguration.loadConfiguration(messagesFile);
     }
-
-    public String getDatabaseName() {
-        return config.getString("database.database", "dzeconomy");
+    
+    // Getters
+    
+    public FileConfiguration getConfig() {
+        return config;
     }
-
-    public String getDatabaseUsername() {
-        return config.getString("database.username", "root");
+    
+    public FileConfiguration getRanks() {
+        return ranks;
     }
-
-    public String getDatabasePassword() {
-        return config.getString("database.password", "");
+    
+    public FileConfiguration getMobRewards() {
+        return mobRewards;
     }
-
-    public boolean isCurrencyEnabled(CurrencyType type) {
-        String path = "currencies." + type.getKey() + ".enable";
-        return config.getBoolean(path, true);
+    
+    public FileConfiguration getMessages() {
+        return messages;
     }
-
-    public BigDecimal getNewPlayerBonus(CurrencyType type) {
-        String path = "currencies." + type.getKey() + ".new_player_bonus";
-        return BigDecimal.valueOf(config.getDouble(path, 0));
-    }
-
-    public String getCurrencySymbol(CurrencyType type) {
-        String path = "currencies." + type.getKey() + ".symbol";
-        return config.getString(path, type.getSymbol());
-    }
-
-    public int getDecimalPlaces(CurrencyType type) {
-        String path = "currencies." + type.getKey() + ".decimal_places";
-        return config.getInt(path, 2);
-    }
-
-    public boolean isConversionEnabled() {
-        return config.getBoolean("conversion.enabled", true);
-    }
-
-    public BigDecimal getConversionRate(String from, String to) {
-        String key = from.toLowerCase() + "-to-" + to.toLowerCase();
-        String path = "conversion.rates." + key;
-        return BigDecimal.valueOf(config.getDouble(path, 1.0));
-    }
-
-    public boolean useShortForm() {
-        return config.getBoolean("format.use-short-form", true);
-    }
-
-    public int getDecimalLimit() {
-        return config.getInt("format.decimal-limit", 2);
-    }
-
-    public boolean isPvpEconomyEnabled() {
-        return config.getBoolean("pvp-economy.enabled", true);
-    }
-
-    public boolean isPlaceholderAPIEnabled() {
-        return config.getBoolean("hooks.placeholderapi", true);
-    }
-
-    public boolean isLuckPermsEnabled() {
-        return config.getBoolean("hooks.luckperms", true);
+    
+    /**
+     * Configuration type enum
+     */
+    public enum ConfigType {
+        CONFIG,
+        RANKS,
+        MOB_REWARDS,
+        MESSAGES
     }
 }

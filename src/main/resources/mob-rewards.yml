@@ -1,63 +1,116 @@
-enabled: true
+# ============================================
+#        DZEconomy Mob Kill Rewards
+# ============================================
 
-categories:
-  natural:
-    enable: true
-    reward: 1
-    mobs:
-      - PIG
-      - COW
-      - SHEEP
-      - CHICKEN
-      - HORSE
-      - DONKEY
-      - MULE
-      - LLAMA
-      - RABBIT
-      - FOX
-      - WOLF
-      - OCELOT
-      - CAT
+global:
+  # Enable mob kill rewards
+  enabled: true
+  # Only reward if player killed the mob (not environment)
+  require-player-kill: true
+
+# Neutral mobs (passive animals)
+neutral:
+  enabled: true
+  reward: 1.0
+  mobs:
+    - PIG
+    - COW
+    - SHEEP
+    - CHICKEN
+    - RABBIT
+    - HORSE
+    - DONKEY
+    - MULE
+    - CAT
+    - PARROT
+    - FOX
+    - TURTLE
+    - BEE
+    - GOAT
+    - AXOLOTL
+    - SQUID
+    - GLOW_SQUID
+    - DOLPHIN
+    - WOLF
+    - OCELOT
+    - PANDA
+    - POLAR_BEAR
+    - LLAMA
+    - TRADER_LLAMA
+    - WANDERING_TRADER
+    - VILLAGER
+    - IRON_GOLEM
+    - SNOW_GOLEM
+    - MUSHROOM_COW
+    - STRIDER
+    - FROG
+    - TADPOLE
+    - ALLAY
+    - CAMEL
+    - SNIFFER
+
+# Easy hostile mobs
+easy:
+  enabled: true
+  reward: 2.0
+  mobs:
+    - ZOMBIE
+    - SKELETON
+    - SPIDER
+    - CAVE_SPIDER
+    - HUSK
+    - STRAY
+    - DROWNED
+    - ZOMBIE_VILLAGER
+    - SILVERFISH
+    - SLIME
+    - MAGMA_CUBE
+    - ENDERMITE
+    - VEX
+    - BAT
+    - TROPICAL_FISH
+    - COD
+    - SALMON
+    - PUFFERFISH
+
+# Hard hostile mobs
+hard:
+  enabled: true
+  reward: 4.0
+  mobs:
+    - CREEPER
+    - WITCH
+    - ENDERMAN
+    - BLAZE
+    - GHAST
+    - PHANTOM
+    - SHULKER
+    - PIGLIN
+    - PIGLIN_BRUTE
+    - HOGLIN
+    - ZOGLIN
+    - ZOMBIFIED_PIGLIN
+    - VINDICATOR
+    - EVOKER
+    - PILLAGER
+    - RAVAGER
+    - GUARDIAN
+    - ELDER_GUARDIAN
+    - WITHER_SKELETON
+    - BOGGED
+
+# Boss mobs (with rank-based bonus)
+boss:
+  enabled: true
   
-  easy:
-    enable: true
-    reward: 2
-    mobs:
-      - ZOMBIE
-      - SKELETON
-      - SPIDER
-      - CAVE_SPIDER
-      - SILVERFISH
-      - ENDERMITE
-      - SLIME
-      - MAGMA_CUBE
-      - ZOMBIE_VILLAGER
-      - DROWNED
-      - HUSK
-      - STRAY
+  ender-dragon:
+    enabled: true
+    reward: 50.0
   
-  hard:
-    enable: true
-    reward: 4
-    mobs:
-      - CREEPER
-      - WITCH
-      - ENDERMAN
-      - BLAZE
-      - GUARDIAN
-      - EVOKER
-      - VINDICATOR
-      - PILLAGER
-      - RAVAGER
-      - PHANTOM
-      - GHAST
-      - SHULKER
-      - ELDER_GUARDIAN
+  wither:
+    enabled: true
+    reward: 50.0
   
-  boss:
-    enable: true
-    reward: 50
-    mobs:
-      - ENDER_DRAGON
-      - WITHER
-      - WARDEN
+  warden:
+    enabled: true
+    reward: 50.0

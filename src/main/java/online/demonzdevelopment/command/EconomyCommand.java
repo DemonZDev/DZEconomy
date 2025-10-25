@@ -3,114 +3,321 @@ package online.demonzdevelopment.command;
 import online.demonzdevelopment.DZEconomy;
 import online.demonzdevelopment.currency.CurrencyType;
 import online.demonzdevelopment.data.PlayerData;
-import online.demonzdevelopment.util.FormatUtil;
-import online.demonzdevelopment.util.NumberUtil;
+import online.demonzdevelopment.rank.Rank;
+import online.demonzdevelopment.util.ColorUtil;
+import online.demonzdevelopment.util.MessagesUtil;
+import online.demonzdevelopment.util.NumberFormatter;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * Economy command for conversion and admin operations
+ */
 public class EconomyCommand implements CommandExecutor, TabCompleter {
+    
     private final DZEconomy plugin;
-
+    private final MessagesUtil messageUtil;
+    
     public EconomyCommand(DZEconomy plugin) {
         this.plugin = plugin;
+        this.messageUtil = new MessagesUtil(plugin);
     }
-
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(plugin.getMessageManager().getMessage("general.must-be-online"));
+        if (args.length == 0) {
+            showHelp(sender);
             return true;
         }
         
-        if (!plugin.getConfigManager().isConversionEnabled()) {
-            player.sendMessage(plugin.getMessageManager().getMessage("economy.convert.disabled"));
-            return true;
+        String subCommand = args[0].toLowerCase();
+        
+        switch (subCommand) {
+            case "convert":
+                handleConvert(sender, Arrays.copyOfRange(args, 1, args.length));
+                break;
+            case "reload":
+                handleReload(sender);
+                break;
+            case "version":
+                handleVersion(sender);
+                break;
+            case "credits":
+                handleCredits(sender);
+                break;
+            default:
+                showHelp(sender);
+                break;
         }
-        
-        if (args.length < 3) {
-            showHelp(player);
-            return true;
-        }
-        
-        CurrencyType from = CurrencyType.fromString(args[0]);
-        CurrencyType to = CurrencyType.fromString(args[1]);
-        BigDecimal amount = NumberUtil.parse(args[2]);
-        
-        if (from == null || to == null) {
-            player.sendMessage(plugin.getMessageManager().getMessage("general.invalid-currency"));
-            return true;
-        }
-        
-        if (from == to) {
-            player.sendMessage(plugin.getMessageManager().getMessage("economy.convert.same-currency"));
-            return true;
-        }
-        
-        if (amount == null || !NumberUtil.isPositive(amount)) {
-            player.sendMessage(plugin.getMessageManager().getMessage("general.invalid-amount"));
-            return true;
-        }
-        
-        PlayerData data = plugin.getPlayerDataManager().getPlayerData(player.getUniqueId());
-        if (data == null) {
-            player.sendMessage(plugin.getMessageManager().getMessage("general.player-not-found"));
-            return true;
-        }
-        
-        BigDecimal tax = plugin.getEconomyManager().calculateConversionTax(player, amount);
-        BigDecimal total = amount.add(tax);
-        
-        if (!data.hasBalance(from, total)) {
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("from_currency", from.getDisplayName());
-            placeholders.put("amount", formatAmount(total));
-            placeholders.put("tax", formatAmount(tax));
-            player.sendMessage(plugin.getMessageManager().getMessage("economy.convert.insufficient", placeholders));
-            return true;
-        }
-        
-        BigDecimal converted = plugin.getEconomyManager().convert(from, to, amount);
-        
-        data.subtractBalance(from, total);
-        data.addBalance(to, converted);
-        
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("from_amount", formatAmount(amount));
-        placeholders.put("from_currency", from.getDisplayName());
-        placeholders.put("to_amount", formatAmount(converted));
-        placeholders.put("to_currency", to.getDisplayName());
-        placeholders.put("tax", formatAmount(tax));
-        
-        player.sendMessage(plugin.getMessageManager().getMessage("economy.convert.success", placeholders));
         
         return true;
     }
-
-    private void showHelp(Player player) {
-        player.sendMessage(plugin.getMessageManager().getMessage("economy.help.header"));
-        player.sendMessage(plugin.getMessageManager().getMessage("economy.help.usage"));
-        player.sendMessage(plugin.getMessageManager().getMessage("economy.help.example"));
+    
+    /**
+     * Handle currency conversion
+     */
+    private void handleConvert(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ColorUtil.translate("&cOnly players can convert currency!"));
+            return;
+        }
+        
+        Player player = (Player) sender;
+        
+        if (!player.hasPermission("dzeconomy.economy.convert")) {
+            sendMessage(sender, "general.no-permission", null);
+            return;
+        }
+        
+        if (!plugin.getConfigManager().getConfig().getBoolean("conversion.enabled", true)) {
+            sendMessage(sender, "conversion.disabled", null);
+            return;
+        }
+        
+        if (args.length < 3) {
+            player.sendMessage(ColorUtil.translate("&cUsage: /economy convert <from> <to> <amount>"));
+            player.sendMessage(ColorUtil.translate("&7Example: &e/economy convert money gem 10000"));
+            return;
+        }
+        
+        // Parse currencies
+        CurrencyType fromCurrency = CurrencyType.fromString(args[0]);
+        CurrencyType toCurrency = CurrencyType.fromString(args[1]);
+        
+        if (fromCurrency == null || toCurrency == null) {
+            sendMessage(sender, "general.invalid-currency", null);
+            return;
+        }
+        
+        if (fromCurrency == toCurrency) {
+            sendMessage(sender, "conversion.same-currency", null);
+            return;
+        }
+        
+        // Parse amount
+        double amount;
+        try {
+            amount = NumberFormatter.parse(args[2]);
+            if (amount <= 0) {
+                sendMessage(sender, "general.invalid-amount", null);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            sendMessage(sender, "general.invalid-amount", null);
+            return;
+        }
+        
+        // Check player has amount
+        double balance = plugin.getCurrencyManager().getBalance(player.getUniqueId(), fromCurrency);
+        if (balance < amount) {
+            String symbol = plugin.getCurrencyManager().getCurrencySymbol(fromCurrency);
+            Map<String, String> placeholders = MessagesUtil.placeholders(
+                    "currency", fromCurrency.getName(),
+                    "symbol", symbol,
+                    "balance", NumberFormatter.formatShort(balance),
+                    "amount", NumberFormatter.formatShort(amount));
+            sendMessage(sender, "general.insufficient-funds", placeholders);
+            return;
+        }
+        
+        // Calculate conversion
+        double conversionRate = getConversionRate(fromCurrency, toCurrency);
+        double convertedAmount = NumberFormatter.truncateDecimal(amount * conversionRate);
+        
+        // Calculate conversion tax
+        Rank playerRank = plugin.getRankManager().getPlayerRank(player.getUniqueId());
+        double conversionTaxPercent = playerRank.getConversionTax();
+        double tax = NumberFormatter.truncateDecimal(amount * (conversionTaxPercent / 100.0));
+        double total = NumberFormatter.truncateDecimal(amount + tax);
+        
+        // Check player has amount + tax
+        if (balance < total) {
+            String symbol = plugin.getCurrencyManager().getCurrencySymbol(fromCurrency);
+            Map<String, String> placeholders = MessagesUtil.placeholders(
+                    "currency", fromCurrency.getName(),
+                    "symbol", symbol,
+                    "balance", NumberFormatter.formatShort(balance),
+                    "amount", NumberFormatter.formatShort(amount),
+                    "tax", NumberFormatter.formatShort(tax),
+                    "total", NumberFormatter.formatShort(total));
+            sendMessage(sender, "general.insufficient-funds-tax", placeholders);
+            return;
+        }
+        
+        // Execute conversion
+        plugin.getCurrencyManager().removeBalance(player.getUniqueId(), fromCurrency, total);
+        plugin.getCurrencyManager().addBalance(player.getUniqueId(), toCurrency, convertedAmount);
+        
+        // Save data
+        plugin.getCurrencyManager().savePlayerDataAsync(player.getUniqueId());
+        
+        // Send success message
+        String symbol1 = plugin.getCurrencyManager().getCurrencySymbol(fromCurrency);
+        String symbol2 = plugin.getCurrencyManager().getCurrencySymbol(toCurrency);
+        
+        Map<String, String> placeholders = MessagesUtil.placeholders(
+                "symbol1", symbol1,
+                "amount1", NumberFormatter.formatShort(amount),
+                "currency1", fromCurrency.getName(),
+                "symbol2", symbol2,
+                "amount2", NumberFormatter.formatShort(convertedAmount),
+                "currency2", toCurrency.getName(),
+                "tax", NumberFormatter.formatShort(tax));
+        
+        sendMessage(sender, "conversion.success", placeholders);
     }
-
-    private String formatAmount(BigDecimal amount) {
-        return FormatUtil.formatCurrency(
-            amount,
-            plugin.getConfigManager().useShortForm(),
-            plugin.getConfigManager().getDecimalLimit()
-        );
+    
+    /**
+     * Get conversion rate between two currencies
+     */
+    private double getConversionRate(CurrencyType from, CurrencyType to) {
+        // Get base rates from config
+        double gemToMobcoin = plugin.getConfigManager().getConfig().getDouble("conversion.rates.gem-to-mobcoin", 100.0);
+        double gemToMoney = plugin.getConfigManager().getConfig().getDouble("conversion.rates.gem-to-money", 10000.0);
+        double mobcoinToMoney = plugin.getConfigManager().getConfig().getDouble("conversion.rates.mobcoin-to-money", 100.0);
+        
+        // Calculate all possible conversions
+        if (from == CurrencyType.GEM && to == CurrencyType.MOBCOIN) {
+            return gemToMobcoin;
+        } else if (from == CurrencyType.GEM && to == CurrencyType.MONEY) {
+            return gemToMoney;
+        } else if (from == CurrencyType.MOBCOIN && to == CurrencyType.GEM) {
+            return 1.0 / gemToMobcoin;
+        } else if (from == CurrencyType.MOBCOIN && to == CurrencyType.MONEY) {
+            return mobcoinToMoney;
+        } else if (from == CurrencyType.MONEY && to == CurrencyType.GEM) {
+            return 1.0 / gemToMoney;
+        } else if (from == CurrencyType.MONEY && to == CurrencyType.MOBCOIN) {
+            return 1.0 / mobcoinToMoney;
+        }
+        
+        return 1.0;
     }
-
+    
+    /**
+     * Handle reload command
+     */
+    private void handleReload(CommandSender sender) {
+        if (!sender.hasPermission("dzeconomy.admin.reload") && !sender.isOp()) {
+            sendMessage(sender, "general.no-permission", null);
+            return;
+        }
+        
+        plugin.reload();
+        sendMessage(sender, "admin.reload-success", null);
+    }
+    
+    /**
+     * Handle credits command - Show plugin creator information
+     */
+    private void handleCredits(CommandSender sender) {
+        if (!sender.hasPermission("dzeconomy.admin") && !sender.isOp()) {
+            sendMessage(sender, "general.no-permission", null);
+            return;
+        }
+        
+        // Hardcoded credits message (not configurable)
+        sender.sendMessage(ColorUtil.translate("&a&l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"));
+        sender.sendMessage(ColorUtil.translate("&6&lCreated by DemonZ Development"));
+        sender.sendMessage(ColorUtil.translate("&e"));
+        sender.sendMessage(ColorUtil.translate("&6DemonZ Development Ecosystem:"));
+        sender.sendMessage(ColorUtil.translate("&f-  &bdemonzdevelopment.online"));
+        sender.sendMessage(ColorUtil.translate("&f-  &bhyzerox.me"));
+        sender.sendMessage(ColorUtil.translate("&a&l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"));
+    }
+    
+    /**
+     * Handle version/update check command
+     */
+    private void handleVersion(CommandSender sender) {
+        if (!sender.hasPermission("dzeconomy.economy.version") && 
+            !sender.hasPermission("dzeconomy.admin") && !sender.isOp()) {
+            sendMessage(sender, "general.no-permission", null);
+            return;
+        }
+        
+        String currentVersion = plugin.getDescription().getVersion();
+        sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &7Version: &av" + currentVersion));
+        sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &7Author: &eDemonZ Development"));
+        
+        if (plugin.getUpdateChecker() != null && plugin.getUpdateChecker().isCheckComplete()) {
+            if (plugin.getUpdateChecker().isUpdateAvailable()) {
+                String latestVersion = plugin.getUpdateChecker().getLatestVersion();
+                String downloadUrl = plugin.getUpdateChecker().getDownloadUrl();
+                sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &e&lUPDATE AVAILABLE!"));
+                sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &7Latest: &av" + latestVersion));
+                sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &7Download: &b" + downloadUrl));
+            } else {
+                sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &a✓ You are running the latest version!"));
+            }
+        } else {
+            sender.sendMessage(ColorUtil.translate("&8[&6DZ&eEconomy&8] &7Checking for updates..."));
+            // Trigger update check if not done yet
+            if (plugin.getUpdateChecker() != null) {
+                plugin.getUpdateChecker().checkForUpdates().thenAccept(hasUpdate -> {
+                    Bukkit.getScheduler().runTask(plugin, () -> handleVersion(sender));
+                });
+            }
+        }
+    }
+    
+    /**
+     * Show help menu
+     */
+    private void showHelp(CommandSender sender) {
+        boolean isAdmin = sender.hasPermission("dzeconomy.admin") || sender.isOp();
+        
+        String helpMessage = messageUtil.getMessage("help.economy");
+        
+        if (isAdmin) {
+            String adminCommands = messageUtil.getMessage("help.economy-admin");
+            helpMessage = helpMessage.replace("{admin_commands}", adminCommands);
+        } else {
+            helpMessage = helpMessage.replace("{admin_commands}", "");
+        }
+        
+        sender.sendMessage(helpMessage);
+    }
+    
+    /**
+     * Send a message with placeholders
+     */
+    private void sendMessage(CommandSender sender, String path, Map<String, String> placeholders) {
+        String message = messageUtil.getMessage(path, placeholders);
+        sender.sendMessage(message);
+    }
+    
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1 || args.length == 2) {
-            return Arrays.asList("money", "mobcoin", "gem");
+        List<String> completions = new ArrayList<>();
+        
+        if (args.length == 1) {
+            completions.add("convert");
+            completions.add("version");
+            if (sender.hasPermission("dzeconomy.admin") || sender.isOp()) {
+                completions.add("reload");
+                completions.add("credits");
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("convert")) {
+            completions.add("money");
+            completions.add("mobcoin");
+            completions.add("gem");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("convert")) {
+            completions.add("money");
+            completions.add("mobcoin");
+            completions.add("gem");
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("convert")) {
+            completions.add("100");
+            completions.add("1000");
+            completions.add("10000");
         }
-        return Collections.emptyList();
+        
+        return completions;
     }
 }

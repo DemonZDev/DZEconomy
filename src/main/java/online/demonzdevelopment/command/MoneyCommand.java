@@ -3,7 +3,11 @@ package online.demonzdevelopment.command;
 import online.demonzdevelopment.DZEconomy;
 import online.demonzdevelopment.currency.CurrencyType;
 
-public class MoneyCommand extends AbstractCurrencyCommand {
+/**
+ * Money currency command handler
+ */
+public class MoneyCommand extends BaseCurrencyCommand {
+    
     public MoneyCommand(DZEconomy plugin) {
         super(plugin, CurrencyType.MONEY);
     }
