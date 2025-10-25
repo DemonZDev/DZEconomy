@@ -1,0 +1,36 @@
+name: Build DZEconomy
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1️⃣ Setup Workflow
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+      
+      # 2️⃣ Make Build
+      - name: Build Plugin
+        run: mvn clean package -DskipTests
+      
+      # 3️⃣ Upload JAR
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: DZEconomy-1.0.0.jar
+          path: target/DZEconomy-*.jar
+          compression-level: 0
