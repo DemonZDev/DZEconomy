@@ -6,15 +6,6 @@
 
 A professional, production-ready multi-currency economy plugin for PaperMC servers featuring **Money**, **MobCoin**, and **Gems** with advanced rank-based systems, interactive request GUIs, PVP transfers, conversion mechanics, and comprehensive API integration.
 
-### **What's New in v1.2.0**
-- ✅ **Fixed API Registration** - Other plugins can now properly hook into DZEconomy
-- ✅ **Reorganized Package Structure** - New `online.demonzdevelopment.dzeconomy.*` package
-- ✅ **Enhanced API Documentation** - Clearer examples and better error handling
-- ✅ **Updated to Java 21** - Full Java 21 support with latest Maven plugins
-- ✅ **Improved Dependency Shading** - Better compatibility with other plugins
-
----
-
 ## 🌟 Features
 
 ### **Multi-Currency System**
@@ -416,7 +407,7 @@ updater:
 
 - **Platform:** PaperMC/Bukkit 1.21.1
 - **Java Version:** 21
-- **Build System:** Gradle with Shadow plugin
+- **Build System:** Maven
 - **Dependencies:**
   - LuckPerms API 5.4
   - PlaceholderAPI 2.11.6
