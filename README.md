@@ -249,6 +249,21 @@ Fully customizable messages with color codes and placeholders.
 
 ## 🔌 API Usage
 
+### **Maven Dependency**
+```xml
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+
+<dependency>
+    <groupId>com.github.DemonZDev</groupId>
+    <artifactId>DZEconomy</artifactId>
+    <version>1.2.0</version>
+    <scope>provided</scope>
+</dependency>
+```
+
 ### **Accessing the API**
 ```java
 import online.demonzdevelopment.dzeconomy.api.DZEconomyAPI;
