@@ -1,10 +1,17 @@
 # DZEconomy - Professional Multi-Currency Economy Plugin
 
-![Version](https://img.shields.io/badge/version-1.1.1-brightgreen)
+![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)
 ![Minecraft](https://img.shields.io/badge/minecraft-1.21.1-blue)
 ![Java](https://img.shields.io/badge/java-21-orange)
 
 A professional, production-ready multi-currency economy plugin for PaperMC servers featuring **Money**, **MobCoin**, and **Gems** with advanced rank-based systems, interactive request GUIs, PVP transfers, conversion mechanics, and comprehensive API integration.
+
+### **What's New in v1.2.0**
+- ✅ **Fixed API Registration** - Other plugins can now properly hook into DZEconomy
+- ✅ **Reorganized Package Structure** - New `online.demonzdevelopment.dzeconomy.*` package
+- ✅ **Enhanced API Documentation** - Clearer examples and better error handling
+- ✅ **Updated to Java 21** - Full Java 21 support with latest Maven plugins
+- ✅ **Improved Dependency Shading** - Better compatibility with other plugins
 
 ---
 
@@ -253,14 +260,21 @@ Fully customizable messages with color codes and placeholders.
 
 ### **Accessing the API**
 ```java
-import online.demonzdevelopment.api.DZEconomyAPI;
-import online.demonzdevelopment.currency.CurrencyType;
+import online.demonzdevelopment.dzeconomy.api.DZEconomyAPI;
+import online.demonzdevelopment.dzeconomy.currency.CurrencyType;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
-// Get API instance
-DZEconomyAPI api = Bukkit.getServicesManager()
-    .getRegistration(DZEconomyAPI.class)
-    .getProvider();
+// Get API instance via ServicesManager
+RegisteredServiceProvider<DZEconomyAPI> provider = Bukkit.getServicesManager()
+    .getRegistration(DZEconomyAPI.class);
+
+if (provider != null) {
+    DZEconomyAPI api = provider.getProvider();
+    // API is available
+} else {
+    // DZEconomy not found or not loaded
+}
 ```
 
 ### **Example Operations**
@@ -426,8 +440,15 @@ updater:
 
 For issues, questions, or feature requests:
 - **Author:** DemonZ Development
-- **Version:** 1.1.1
+- **Version:** 1.2.0
 - **Website:** https://demonzdevelopment.online
+
+### **API Integration Troubleshooting**
+If other plugins can't find DZEconomy API:
+1. Ensure DZEconomy is loaded **before** your plugin (add to `depend:` or `softdepend:` in plugin.yml)
+2. Use the correct import: `import online.demonzdevelopment.dzeconomy.api.DZEconomyAPI;`
+3. Check API registration: `Bukkit.getServicesManager().getRegistration(DZEconomyAPI.class)`
+4. Verify DZEconomy v1.2.0+ is installed (older versions have different package structure)
 
 ---
 

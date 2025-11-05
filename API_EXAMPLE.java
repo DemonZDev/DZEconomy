@@ -1,18 +1,24 @@
 package com.example.myplugin;
 
-// Example for DZEconomy v1.1.1 by DemonZ Development
+// Example for DZEconomy v1.2.0 by DemonZ Development
 
-import online.demonzdevelopment.api.DZEconomyAPI;
-import online.demonzdevelopment.currency.CurrencyType;
-import online.demonzdevelopment.rank.Rank;
+import online.demonzdevelopment.dzeconomy.api.DZEconomyAPI;
+import online.demonzdevelopment.dzeconomy.currency.CurrencyType;
+import online.demonzdevelopment.dzeconomy.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
 /**
  * Example plugin demonstrating DZEconomy API usage
+ * 
+ * IMPORTANT: Add DZEconomy as a dependency in your plugin.yml:
+ * depend: [DZEconomy]
+ * or
+ * softdepend: [DZEconomy]
  */
 public class ExamplePlugin extends JavaPlugin {
     
@@ -20,18 +26,25 @@ public class ExamplePlugin extends JavaPlugin {
     
     @Override
     public void onEnable() {
-        // Get DZEconomy API instance
+        // Check if DZEconomy is loaded
         if (Bukkit.getPluginManager().getPlugin("DZEconomy") == null) {
             getLogger().severe("DZEconomy not found! Disabling...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         
-        economyAPI = Bukkit.getServicesManager()
-                .getRegistration(DZEconomyAPI.class)
-                .getProvider();
+        // Get DZEconomy API instance via ServicesManager
+        RegisteredServiceProvider<DZEconomyAPI> provider = Bukkit.getServicesManager()
+                .getRegistration(DZEconomyAPI.class);
         
-        getLogger().info("Successfully hooked into DZEconomy!");
+        if (provider == null) {
+            getLogger().severe("DZEconomy API not registered! Disabling...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        
+        economyAPI = provider.getProvider();
+        getLogger().info("Successfully hooked into DZEconomy v1.2.0+!");
     }
     
     /**
