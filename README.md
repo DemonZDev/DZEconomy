@@ -34,9 +34,19 @@ A professional, production-ready multi-currency economy plugin for PaperMC serve
 
 ### **Interactive Request GUI**
 - Real-time countdown display
-- Accept/Deny buttons
+- Enhanced visual design with currency-specific items
+- Accept/Deny buttons with detailed information
 - Respects existing open inventories
 - Configurable sounds and intervals
+- Combat-aware (blocks GUI during combat)
+
+### **Combat Tagging System** ⚔️
+- Tracks PVP and PvE combat status
+- Configurable combat duration (default: 30 seconds)
+- Prevents request GUI spam during combat
+- Configurable dangerous mobs list (Wither, Ender Dragon, Warden, etc.)
+- Optional combat notifications
+- Can be enabled/disabled in config
 
 ### **Mob Kill Rewards**
 - Neutral mobs: 1 MC
@@ -190,6 +200,18 @@ Main plugin configuration for storage, currencies, display, PVP, GUI, integratio
 
 **Key Settings:**
 ```yaml
+# Combat Tagging System
+combat-tagging:
+  enabled: true
+  duration: 30  # seconds
+  block-request-gui-in-combat: true
+  dangerous-mobs:
+    - WITHER
+    - ENDER_DRAGON
+    - WARDEN
+    - CREEPER
+    # ... more configurable mobs
+
 # Update checker
 update-checker:
   enabled: true
@@ -568,11 +590,14 @@ storage:
 - All commands are **case-insensitive**
 - Numbers support **K/M/B/T** suffixes (e.g., `1.5k = 1500`)
 - Request GUI **respects existing open inventories**
+- Request GUI **blocked during combat** (configurable)
+- Combat tag lasts **30 seconds** by default (configurable)
 - Daily limits reset at configured time (default: 00:00)
 - Auto-save runs every 5 minutes by default
 - PVP transfers are **instant** on kill
 - Runtime update checks run at configured intervals (default: 1 hour)
 - Data migration creates automatic backups for safety
+- Combat tags are **automatically cleaned up** every 5 seconds
 
 ---
 

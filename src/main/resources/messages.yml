@@ -1,0 +1,167 @@
+# ============================================
+#          DZEconomy Messages
+# ============================================
+# Placeholders:
+# {prefix} - Plugin prefix
+# {player} - Player name
+# {currency} - Currency name
+# {symbol} - Currency symbol
+# {amount} - Amount
+# {balance} - Balance
+# {tax} - Tax amount
+# {total} - Total amount
+# {cooldown} - Cooldown time
+# {limit} - Limit amount
+# {color} - Currency color
+
+prefix: "&8[&6DZ&eEconomy&8]&r"
+
+general:
+  no-permission: "{prefix} &cYou don't have permission to do that!"
+  player-not-found: "{prefix} &cPlayer '&e{player}&c' not found!"
+  player-offline: "{prefix} &c{player} is not online!"
+  insufficient-funds: "{prefix} &cInsufficient {currency}! You have &e{symbol}{balance} &cbut need &e{symbol}{amount}"
+  insufficient-funds-tax: "{prefix} &cInsufficient funds for tax! You need &e{symbol}{amount} &c+ &e{symbol}{tax} &c= &e{symbol}{total}"
+  cooldown-active: "{prefix} &cPlease wait &e{cooldown}s &cbefore using this again!"
+  daily-limit-reached: "{prefix} &cDaily limit reached! You can {action} &e{limit} &ctimes per day"
+  invalid-amount: "{prefix} &cInvalid amount! Must be greater than 0"
+  invalid-currency: "{prefix} &cInvalid currency! Use: &emoney&c, &emobcoin&c, or &egem"
+  cannot-afford-self: "{prefix} &cYou cannot send currency to yourself!"
+  max-transaction-exceeded: "{prefix} &cTransaction amount exceeds maximum limit!"
+
+# Combat System Messages
+combat:
+  # Set to true to notify players when tagged in combat
+  notify-on-tag: false
+  # Messages
+  tagged-pvp: "{prefix} &c⚔ You are now in combat with &e{player}&c!"
+  tagged-pve: "{prefix} &c⚔ You are now in combat!"
+  target-in-combat: "{prefix} &c{player} is currently in combat! Request GUI blocked, but they can still accept via command."
+  exit-combat: "{prefix} &aYou are no longer in combat!"
+
+balance:
+  own: "{prefix} &7Your {currency} balance: {color}{symbol}{amount}"
+  other: "{prefix} &7{player}'s {currency}: {color}{symbol}{amount}"
+
+send:
+  success-sender: "{prefix} &aSuccessfully sent &e{symbol}{amount} {currency} &ato &e{player}&a! &7Tax: &e{symbol}{tax}"
+  success-receiver: "{prefix} &aReceived &e{symbol}{amount} {currency} &afrom &e{player}&a!"
+  balance-update: "{prefix} &7New balance: {color}{symbol}{balance}"
+
+request:
+  sent: "{prefix} &aRequest sent to &e{player} &afor &e{symbol}{amount} {currency}&a!"
+  received-chat: |
+    {prefix} &e{player} &7has requested &a{symbol}{amount} {currency} &7from you!
+    {prefix} &7Type &a/money accept &7or &c/money deny &7(&e120s&7)
+  accepted-accepter: "{prefix} &aRequest accepted! Sent &e{symbol}{amount}&a. &7Tax: &e{symbol}{tax}"
+  accepted-requester: "{prefix} &a{player} &aaccepted your request! Received &e{symbol}{amount}&a!"
+  denied-denier: "{prefix} &cRequest denied!"
+  denied-requester: "{prefix} &c{player} &cdenied your request!"
+  expired: "{prefix} &cRequest expired!"
+  expired-other: "{prefix} &cYour request to &e{player} &chas expired!"
+  no-pending: "{prefix} &cYou have no pending requests!"
+  already-pending: "{prefix} &cYou already have a pending request with this player!"
+  cannot-request-self: "{prefix} &cYou cannot request currency from yourself!"
+
+admin:
+  add-success: "{prefix} &aAdded &e{symbol}{amount} {currency} &ato &e{player}&a. New balance: &e{symbol}{balance}"
+  add-notify: "{prefix} &aAn admin added &e{symbol}{amount} {currency} &ato your account!"
+  reload-success: "{prefix} &aConfiguration reloaded successfully!"
+  update-checking: "{prefix} &eChecking for updates..."
+  update-found: "{prefix} &e&lUPDATE AVAILABLE! &av{version}"
+  update-downloading: "{prefix} &eDownloading update..."
+  update-success: "{prefix} &a&l✓ Update downloaded! Restart to apply."
+  update-failed: "{prefix} &cUpdate failed: {error}"
+  update-latest: "{prefix} &aYou are on the latest version!"
+
+conversion:
+  success: "{prefix} &aConverted &e{symbol1}{amount1} {currency1} &ato &e{symbol2}{amount2} {currency2}&a! &7Tax: &e{symbol1}{tax}"
+  same-currency: "{prefix} &cCannot convert a currency to itself!"
+  disabled: "{prefix} &cCurrency conversion is currently disabled!"
+
+pvp:
+  killer: "{prefix} &aKilled &e{player}&a! Received: &a{money_symbol}{money}&7, &6{mobcoin_symbol}{mobcoin}&7, &b{gem_symbol}{gem}"
+  victim: "{prefix} &cKilled by &e{player}&c! You lost all your currencies!"
+  broadcast: "{prefix} &e{killer} &7killed &e{victim} &7and stole: &a{money_symbol}{money}&7, &6{mobcoin_symbol}{mobcoin}&7, &b{gem_symbol}{gem}"
+
+mob-kill:
+  reward: "{prefix} &7Killed &e{mob}&7: &6+{amount} MobCoin"
+  reward-boss: "{prefix} &e&lBOSS KILL! &7Killed &e{mob}&7: &6+{amount} MobCoin &7(&e+{bonus}% &7rank bonus)"
+
+gui:
+  request:
+    title: "&e{currency} Request from {player}"
+    info-lore:
+      - "&7Requester: &a{player}"
+      - "&7Amount: &a{symbol}{amount}"
+      - "&7You will send: &c{symbol}{total}"
+      - "&7They receive: &a{symbol}{amount}"
+      - "&7Tax: &e{symbol}{tax} &7(&e{tax_percent}%&7)"
+      - "&7Time Remaining: &c{time}s"
+    accept-name: "&a&lACCEPT"
+    deny-name: "&c&lDENY"
+    timeout-message: "{prefix} &cRequest GUI closed - timeout!"
+
+help:
+  money: |
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &a&lMoney Commands
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &a/money balance &7[player] &8- &7Check balance
+    &a/money send &7<player> <amount> &8- &7Send money
+    &a/money request &7<player> <amount> &8- &7Request money
+    &a/money accept &8- &7Accept pending request
+    &a/money deny &8- &7Deny pending request
+    {admin_commands}&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+  
+  money-admin: |
+    &c/money add &7<player> <amount> &8- &7Add money (Admin)
+  
+  mobcoin: |
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &6&lMobCoin Commands
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &a/mobcoin balance &7[player] &8- &7Check balance
+    &a/mobcoin send &7<player> <amount> &8- &7Send mobcoins
+    &a/mobcoin request &7<player> <amount> &8- &7Request mobcoins
+    &a/mobcoin accept &8- &7Accept pending request
+    &a/mobcoin deny &8- &7Deny pending request
+    {admin_commands}&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+  
+  mobcoin-admin: |
+    &c/mobcoin add &7<player> <amount> &8- &7Add mobcoins (Admin)
+  
+  gem: |
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &b&lGem Commands
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &a/gem balance &7[player] &8- &7Check balance
+    &a/gem send &7<player> <amount> &8- &7Send gems
+    &a/gem request &7<player> <amount> &8- &7Request gems
+    &a/gem accept &8- &7Accept pending request
+    &a/gem deny &8- &7Deny pending request
+    {admin_commands}&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+  
+  gem-admin: |
+    &c/gem add &7<player> <amount> &8- &7Add gems (Admin)
+  
+  economy: |
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &e&lEconomy Commands
+    &8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+    &a/economy convert &7<from> <to> <amount> &8- &7Convert currencies
+    &7  Example: &e/economy convert money gem 10000
+    {admin_commands}&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━&r
+  
+  economy-admin: |
+    &c/economy reload &8- &7Reload configuration (Admin)
+    &c/economy version &8- &7Check for updates
+    &c/economy update <version|previous|next|latest|auto> &8- &7Update plugin (Admin)
+
+welcome:
+  new-player: |
+    {prefix} &aWelcome to the server, &e{player}&a!
+    {prefix} &7You've received:
+    {prefix} &a  • $50,000 Money
+    {prefix} &6  • 500 MobCoins
+    {prefix} &b  • 5 Gems

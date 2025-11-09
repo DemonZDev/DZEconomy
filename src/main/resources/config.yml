@@ -1,0 +1,171 @@
+# ============================================
+#           DZEconomy Configuration
+#           By DemonZ Development
+# ============================================
+
+# Combat Tagging System
+combat-tagging:
+  # Enable combat tagging system
+  enabled: true
+  # Combat duration in seconds (time to stay in combat after last hit)
+  duration: 30
+  # Block request GUI from opening when player is in combat
+  block-request-gui-in-combat: true
+  # List of dangerous mobs that trigger combat tagging
+  # Players will be tagged in combat when fighting these mobs
+  dangerous-mobs:
+    - WITHER
+    - ENDER_DRAGON
+    - WARDEN
+    - CREEPER
+    - PHANTOM
+    - RAVAGER
+    - PIGLIN_BRUTE
+    - EVOKER
+    - VEX
+    - BLAZE
+    - GHAST
+    - ELDER_GUARDIAN
+    - SHULKER
+    - VINDICATOR
+
+# Update checker
+update-checker:
+  enabled: true
+  # Notify admins on join about updates
+  notify-on-join: true
+  # Runtime update checking (periodic checks while server is running)
+  runtime-check-enabled: true
+  # Check interval in hours
+  runtime-check-interval: 1
+
+# Updater settings
+updater:
+  # Enable automatic updates
+  enabled: true
+  # Auto-update on server start (downloads to update folder)
+  autoOnStart: false
+  # Auto-update during runtime checks (downloads to update folder)
+  runtime-auto-update: false
+  # Attempt hot-reload instead of requiring restart (experimental, may fail)
+  attempt-hot-reload: false
+
+storage:
+  # Storage type: FLATFILE, SQLITE, MYSQL
+  type: FLATFILE
+  
+  # Auto-save interval in minutes
+  auto-save-interval: 5
+  
+  # Backup settings
+  backup:
+    enabled: true
+    # Backup interval in minutes (1440 = 24 hours)
+    interval: 1440
+    # Number of backups to keep
+    keep-backups: 7
+  
+  # MySQL settings (only used if type is MYSQL)
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "dzeconomy"
+    username: "root"
+    password: "password"
+    # Connection pool settings
+    pool:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+currencies:
+  money:
+    enabled: true
+    symbol: "$"
+    display-name: "&aMoney"
+    starting-balance: 50000.00
+    decimal-places: 2
+  
+  mobcoin:
+    enabled: true
+    symbol: "MC"
+    display-name: "&6MobCoin"
+    starting-balance: 500.00
+    decimal-places: 2
+  
+  gem:
+    enabled: true
+    symbol: "◆"
+    display-name: "&b&lGem"
+    starting-balance: 5.00
+    decimal-places: 2
+
+conversion:
+  enabled: true
+  # Exchange rates (1 Gem = 100 MobCoins = 10,000 Money)
+  rates:
+    gem-to-mobcoin: 100.0
+    gem-to-money: 10000.0
+    mobcoin-to-money: 100.0
+
+display:
+  # Use short form notation (1K, 1M, 1B, etc.)
+  use-short-form: true
+  # Use commas in full numbers (10,000 vs 10000)
+  use-commas: true
+
+pvp-economy:
+  # Enable PVP currency transfers on player kill
+  enabled: true
+  transfer-money: true
+  transfer-mobcoins: true
+  transfer-gems: true
+  # Broadcast large transfers to all players
+  broadcast:
+    enabled: true
+    # Minimum money value to broadcast (based on money)
+    threshold: 100000.0
+
+gui:
+  request:
+    # Enable GUI for currency requests
+    enabled: true
+    # If true, don't force-open GUI if player has inventory open
+    respect-open-inventories: true
+    # GUI update interval in ticks (20 = 1 second)
+    update-interval: 20
+    # Sound effects
+    sounds:
+      open: "BLOCK_NOTE_BLOCK_PLING"
+      accept: "ENTITY_PLAYER_LEVELUP"
+      deny: "BLOCK_ANVIL_LAND"
+      timeout: "ENTITY_VILLAGER_NO"
+
+integrations:
+  placeholderapi:
+    enabled: true
+    # Default format: "short" or "full"
+    default-format: "short"
+  
+  luckperms:
+    enabled: true
+    # Fallback rank if player has no matching rank
+    fallback-rank: "default"
+    # Cache player ranks for this many seconds
+    cache-duration: 300
+
+limits:
+  # Request timeout in seconds
+  request-timeout: 120
+  # Maximum transaction amount (prevents overflow)
+  max-transaction: 1000000000000.0
+
+daily-reset:
+  # Time to reset daily limits (HH:mm format, server time)
+  time: "00:00"
+
+welcome-message:
+  enabled: true
+  new-player: true
