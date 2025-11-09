@@ -58,6 +58,7 @@ A professional, production-ready multi-currency economy plugin for PaperMC serve
 - **FlatFile** (YAML) - Default
 - **SQLite** - Local database
 - **MySQL** - Remote database with HikariCP pooling
+- **Data Migration** - Seamless migration between storage types with automatic backup
 
 ### **PlaceholderAPI Integration**
 - `%dz_money%` - Short form balance
@@ -66,6 +67,13 @@ A professional, production-ready multi-currency economy plugin for PaperMC serve
 - `%dz_mobcoin%`, `%dz_gem%` - Same format
 - `%dz_rank%` - Player's rank display name
 - `%dz_rank_priority%` - Rank priority
+
+### **Advanced Management**
+- Runtime update checker with configurable intervals
+- Automatic update downloads to update folder
+- Manual and automatic backup system
+- Plugin status monitoring and diagnostics
+- Enable/disable features at runtime
 
 ### **Public API**
 Complete API for third-party plugin integration via Bukkit ServicesManager
@@ -125,9 +133,16 @@ Complete API for third-party plugin integration via Bukkit ServicesManager
 /economy convert <from> <to> <amount> - Convert currencies
 /economy version                      - Check plugin version and updates
 /economy reload                       - Reload configuration (Admin)
+/economy info                         - Display plugin information
+/economy status                       - Show detailed plugin status (Admin)
+/economy migrate <from> <to>          - Migrate data between storage types (Admin)
+/economy backup                       - Create manual backup (Admin)
+/economy enable <feature>             - Enable features (auto-update/runtime-checks) (Admin)
+/economy disable <feature>            - Disable features (auto-update/runtime-checks) (Admin)
+/economy update <version|latest|auto> - Update plugin (Admin)
 ```
 **Example:** `/economy convert money gem 10000`
-**Aliases:** `/eco`, `/dzeco`
+**Aliases:** `/eco`, `/dzeco`, `/dzeconomy`
 
 ---
 
@@ -150,12 +165,18 @@ Complete API for third-party plugin integration via Bukkit ServicesManager
 ### **Economy Permissions**
 - `dzeconomy.economy.convert` - Convert currencies
 - `dzeconomy.economy.version` - Check version
+- `dzeconomy.economy.info` - View plugin information
 - `dzeconomy.admin` - Admin notifications (updates)
 - `dzeconomy.admin.reload` - Reload plugin
 - `dzeconomy.admin.update` - Use /dzeconomy update (Admin)
 - `dzeconomy.admin.money.add` - Add money
 - `dzeconomy.admin.mobcoin.add` - Add mobcoins
 - `dzeconomy.admin.gem.add` - Add gems
+
+### **Admin Permissions**
+- `dzeconomy.admin.migrate` - Migrate data between storage types
+- `dzeconomy.admin.backup` - Create manual backups
+- `dzeconomy.admin.status` - View detailed plugin status
 
 ### **Rank Permissions**
 - `dzeconomy.default` - Default rank (granted by default)
@@ -173,10 +194,16 @@ Main plugin configuration for storage, currencies, display, PVP, GUI, integratio
 update-checker:
   enabled: true
   notify-on-join: true
+  # Runtime update checking (periodic checks while server is running)
+  runtime-check-enabled: true
+  # Check interval in hours
+  runtime-check-interval: 1
 
 storage:
   type: FLATFILE  # FLATFILE, SQLITE, MYSQL
   auto-save-interval: 5  # Minutes
+  
+  # Note: Use /economy migrate <from> <to> to migrate between storage types
 
 currencies:
   money:
@@ -373,6 +400,41 @@ storage:
     password: "password"
 ```
 
+### **Data Migration**
+Seamlessly migrate your economy data between different storage types:
+
+```
+/economy migrate <from> <to>
+```
+
+**Supported migrations:**
+- FlatFile → SQLite
+- FlatFile → MySQL
+- SQLite → FlatFile
+- SQLite → MySQL
+- MySQL → FlatFile
+- MySQL → SQLite
+
+**Features:**
+- Automatic backup before migration
+- Progress tracking with percentage updates
+- Safe rollback capability
+- Preserves all player data, balances, statistics, and limits
+
+**Example:**
+```
+/economy migrate flatfile mysql
+```
+
+The migration process:
+1. Creates backup in `plugins/DZEconomy/backups/`
+2. Loads all player data from source storage
+3. Migrates with progress updates every 10%
+4. Saves all data to destination storage
+5. Reports success with player count
+
+**Important:** Update `config.yml` storage type after migration and restart the server.
+
 ---
 
 ## 🔄 Updater
@@ -396,6 +458,21 @@ Admin-only self-updater integrating GitHub Releases for DemonZDev/DZEconomy.
 - Never downgrades unless explicitly using previous
 - Strips leading 'v' from tag_name and uses semver compare (major.minor.patch)
 
+### Runtime Update Checking
+Automatically check for updates while the server is running:
+
+```yaml
+update-checker:
+  runtime-check-enabled: true    # Enable periodic update checks
+  runtime-check-interval: 1      # Check interval in hours
+```
+
+**Features:**
+- Periodic checks at configurable intervals (default: every 1 hour)
+- Notifies online admins when updates are available
+- Optional automatic download to update folder
+- Enable/disable at runtime: `/economy enable runtime-checks` or `/economy disable runtime-checks`
+
 ### Apply Strategy
 - Primary: Save to update folder; restart required for apply (Paper/Spigot standard)
 - Hot-reload (best-effort): Attempts safe disable, load JAR via PluginManager, then enable. If any step fails, falls back to restart-required flow
@@ -403,9 +480,18 @@ Admin-only self-updater integrating GitHub Releases for DemonZDev/DZEconomy.
 ### Configuration (config.yml)
 ```yaml
 updater:
-  enabled: true           # Enable updater features and commands
-  autoOnStart: false      # Auto-check and download newer release on server start
-  attempt-hot-reload: false  # Try hot-reload; falls back to update folder on failure
+  enabled: true                  # Enable updater features and commands
+  autoOnStart: false             # Auto-check and download newer release on server start
+  runtime-auto-update: false     # Auto-download during runtime checks
+  attempt-hot-reload: false      # Try hot-reload; falls back to update folder on failure
+```
+
+### Management Commands
+```
+/economy enable auto-update      - Enable automatic updates
+/economy disable auto-update     - Disable automatic updates
+/economy enable runtime-checks   - Enable runtime update checking
+/economy disable runtime-checks  - Disable runtime update checking
 ```
 
 ### Acceptance
@@ -431,6 +517,52 @@ updater:
 
 ---
 
+## 🔧 Admin Management
+
+### **Plugin Status & Monitoring**
+Check plugin health and configuration:
+```
+/economy status
+```
+Displays:
+- Current version and author
+- Storage type (FlatFile/SQLite/MySQL)
+- Loaded players count
+- Update checker status
+- Auto-update status
+- Runtime check status and interval
+- Latest version availability
+
+### **Plugin Information**
+View detailed plugin information:
+```
+/economy info
+```
+Shows all features, currencies, and capabilities.
+
+### **Backup Management**
+Create manual backups:
+```
+/economy backup
+```
+**Features:**
+- Saves all player data before backup
+- Creates timestamped backup folder
+- Backs up data directory (including all storage types)
+- Location: `plugins/DZEconomy/backups/YYYY-MM-DD_HH-mm-ss/`
+
+**Automatic Backups:**
+Configure automatic backups in `config.yml`:
+```yaml
+storage:
+  backup:
+    enabled: true
+    interval: 1440    # Minutes (1440 = 24 hours)
+    keep-backups: 7   # Number of backups to retain
+```
+
+---
+
 ## 📝 Notes
 
 - All commands are **case-insensitive**
@@ -439,6 +571,8 @@ updater:
 - Daily limits reset at configured time (default: 00:00)
 - Auto-save runs every 5 minutes by default
 - PVP transfers are **instant** on kill
+- Runtime update checks run at configured intervals (default: 1 hour)
+- Data migration creates automatic backups for safety
 
 ---
 
